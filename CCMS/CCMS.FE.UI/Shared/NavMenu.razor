@@ -1,0 +1,16 @@
+﻿@using CCMS.FE.UI.Components.User
+<PersonCard Style="background-color: var(--mud-palette-drawer-background);color: var(--mud-palette-drawer-text);"/>
+<MudDivider Class="mb-4" />
+<MudNavMenu>
+    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
+    @if (authService.UserHasRole(Common.Const.Roles.SuperAdmin.Name))
+    {
+        <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Handyman" Expanded="false">
+            <MudNavLink Href="Settings/Users" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+            <MudNavLink Href="Settings/Roles" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VerifiedUser">Roles</MudNavLink>
+        </MudNavGroup>
+    }
+
+</MudNavMenu>
+
+ 
