@@ -21,7 +21,7 @@ namespace CCMS.FE.UI.Components.User
         protected override async Task OnInitializedAsync()
         {
             User = AuthenticationService.GetUser();
-            if(User == null)
+            if(User != null)
             {
                 if (User.Picture != null && User.Picture.Length > 0)
                 {

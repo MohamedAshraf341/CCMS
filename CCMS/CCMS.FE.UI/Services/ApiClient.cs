@@ -18,6 +18,10 @@ namespace CCMS.FE.UI.Services
         readonly Dictionary<Type, ApiClientBase> apis = new();
         private readonly AuthenticationService authService;
         public ApiClient_Account Account { get => Get<ApiClient_Account>(); }
+        public ApiClient_Admin Admin { get => Get<ApiClient_Admin>(); }
+        public ApiClient_Restaurant Restaurant { get => Get<ApiClient_Restaurant>(); }
+        public ApiClient_Branche Branche { get => Get<ApiClient_Branche>(); }
+        public ApiClient_BranchPhone BranchPhone { get => Get<ApiClient_BranchPhone>(); }
 
 
         public ApiClient(IOptions<AppSettings> _appSettings, AuthenticationService _authService)

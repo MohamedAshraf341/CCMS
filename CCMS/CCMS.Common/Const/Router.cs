@@ -22,5 +22,29 @@
             public const string AddUser = Prefix + "/AddUser";
             public const string DeleteUser = Prefix + "/DeleteUser";
         }
+        public static class Restaurant
+        {
+            public const string Prefix = "Restaurant";
+            public const string GetRestaurants = Prefix + "/GetRestaurants";
+            public const string AddRestaurant = Prefix + "/AddRestaurant";
+            public const string EditRestaurant = Prefix + "/EditRestaurant";
+            public const string DeleteRestaurant = Prefix + "/DeleteRestaurant";
+        }
+        public static class BranchPhone
+        {
+            public const string Prefix = "BranchPhone";
+            public const string GetBranchPhones = Prefix + "/GetBranchPhones";
+            public const string AddBranchPhone = Prefix + "/AddBranchPhone";
+            public const string EditBranchPhone = Prefix + "/EditBranchPhone";
+            public const string DeleteBranchPhone = Prefix + "/DeleteRestaurant";
+        }
+        public static class Branche
+        {
+            public const string Prefix = "Branche";
+            public const string GetBranches = Prefix + "/GetBranches";
+            public const string AddBranche = Prefix + "/AddBranche";
+            public const string EditBranche = Prefix + "/EditBranche";
+            public const string DeleteBranche = Prefix + "/DeleteBranche";
+        }
     }
 }

@@ -15,7 +15,7 @@ public interface IManagementUsersService
     Task<BaseResponse> SendVerificationCodeAsync(SendCodeToEmailRequest model);
     Task<BaseResponse> VerifyCodeAsync(VerifyCodeRequest model);
     Task<BaseResponse> ConfirmEmailAsync(string userId, string token);
-    Task<List<GetUsersResponse>> GetUsersAsync();
+    Task<List<GetUsersResponse>> GetUsersAsync(Common.Dto.Request.GetUsersRequest model);
     Task<GetUsersResponse?> GetUserByIdAsync(string userId);
     Task<BaseResponse> DeleteUserAsync(string userId);
     Task<BaseResponse> UpdateUserAsync(UpdateUserRequest model);

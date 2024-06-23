@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="Item.Name" Label="Name" Variant="Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="Item.Email" Label="Email" Variant="Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="12">
+                <MudSelect @bind-Value="Item.Role" Label="Role" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem Value="@($"{Common.Const.Roles.User.Name}")" />
+                    <MudSelectItem Value="@($"{Common.Const.Roles.Admin.Name}")" />
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+

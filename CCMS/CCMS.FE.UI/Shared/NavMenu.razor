@@ -3,14 +3,15 @@
 <MudDivider Class="mb-4" />
 <MudNavMenu>
     <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
-    @if (authService.UserHasRole(Common.Const.Roles.SuperAdmin.Name))
+    <MudNavLink Href="/Restaurants" Icon="@Icons.Material.Filled.FoodBank" Match="NavLinkMatch.All">Restaurants</MudNavLink>
+
+    @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name, Common.Const.Roles.Admin.Name))
     {
         <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Handyman" Expanded="false">
             <MudNavLink Href="Settings/Users" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
             <MudNavLink Href="Settings/Roles" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VerifiedUser">Roles</MudNavLink>
         </MudNavGroup>
     }
-
 </MudNavMenu>
 
  

@@ -17,10 +17,10 @@ namespace CCMS.BE.Controllers
         {
             _managementUsersService = managementUsersService;
         }
-        [HttpGet(Router.Admin.GetUsers)]
-        public async Task<IActionResult> GetUsers()
+        [HttpPost(Router.Admin.GetUsers)]
+        public async Task<IActionResult> GetUsers(Common.Dto.Request.GetUsersRequest model)
         {
-            var res = await _managementUsersService.GetUsersAsync();
+            var res = await _managementUsersService.GetUsersAsync(model);
             return Ok(res);
         }
         [HttpPost(Router.Admin.AddUser)]

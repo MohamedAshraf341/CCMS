@@ -81,27 +81,27 @@ public class ManagementUsersService : IManagementUsersService
                 Password= passwordUser,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
-            var confirmationToke=await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodeToken = Encoding.UTF8.GetBytes(confirmationToke);
-            var newToken = WebEncoders.Base64UrlEncode(encodeToken);
-            var requestScheme = _httpContextAccessor.HttpContext.Request.Scheme;
-            var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext());
+            //var confirmationToke=await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var encodeToken = Encoding.UTF8.GetBytes(confirmationToke);
+            //var newToken = WebEncoders.Base64UrlEncode(encodeToken);
+            //var requestScheme = _httpContextAccessor.HttpContext.Request.Scheme;
+            //var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext());
 
-            var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { user.Id, newToken }, requestScheme);
+            //var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { user.Id, newToken }, requestScheme);
 
-            var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\WelcomeTemplate.html";
-            var str = new StreamReader(filePath);
+            //var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\WelcomeTemplate.html";
+            //var str = new StreamReader(filePath);
 
-            var mailText = str.ReadToEnd();
-            str.Close();
+            //var mailText = str.ReadToEnd();
+            //str.Close();
 
-            mailText = mailText
-                .Replace("[name]", response.Name)
-                .Replace("[email]", response.Email)
-                .Replace("[password]", response.Password)
-                .Replace("[confirmationLink]", confirmationLink);
+            //mailText = mailText
+            //    .Replace("[name]", response.Name)
+            //    .Replace("[email]", response.Email)
+            //    .Replace("[password]", response.Password)
+            //    .Replace("[confirmationLink]", confirmationLink);
 
-            await _mailingService.SendEmailAsync(response.Email, "Welcome to our Application", mailText);
+            //await _mailingService.SendEmailAsync(response.Email, "Welcome to our Application", mailText);
             return response;
         }
         catch (Exception ex)
@@ -161,6 +161,7 @@ public class ManagementUsersService : IManagementUsersService
             authModel.Picture=user.Picture;
             authModel.Name=user.Name;
             authModel.Email = user.Email;
+            authModel.Id= user.Id;
 
             if (user.RefreshTokens.Any(t => t.IsActive))
             {
@@ -349,10 +350,10 @@ public class ManagementUsersService : IManagementUsersService
             return new BaseResponse { Success = false, Message = ex.Message };
         }
     }
-    public async Task<List<GetUsersResponse>> GetUsersAsync()
+    public async Task<List<GetUsersResponse>> GetUsersAsync(Common.Dto.Request.GetUsersRequest model)
     {
 
-        var users = await _userManager.Users
+        var users = await _userManager.Users.Where(u => u.Id != model.UserId)
             .Select(u => new GetUsersResponse
             {
                 UserId = u.Id,

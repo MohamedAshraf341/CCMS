@@ -6,6 +6,7 @@ namespace CCMS.Common.Dto.Response;
 
 public class TokenResponse : BaseResponse
 {
+    public string Id { get; set; }
     public string Token { get; set; }
     public DateTime ExpiresOn { get; set; }
     [JsonIgnore]

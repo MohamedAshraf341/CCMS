@@ -47,13 +47,13 @@ namespace CCMS.FE.UI.Shared
             _themeManager.DefaultBorderRadius = 3;
             NavigationManager.LocationChanged += LocationChanged;
         }
-        async Task OnClickLogout()
+        void OnClickLogout()
         {
-            var user= AuthenticationService.GetUser();
-            if (user != null)
-            {
-                var res=await ApiClient.Account.LogOut(user.Token);
-            }
+            //var user= AuthenticationService.GetUser();
+            //if (user != null)
+            //{
+            //    var res=await ApiClient.Account.LogOut(user.Token);
+            //}
             NavigationManager.NavigateTo($"/logout", true);
         }
         private void LocationChanged(object sender, LocationChangedEventArgs e)
