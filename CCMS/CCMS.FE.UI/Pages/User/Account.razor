@@ -1,6 +1,92 @@
 ﻿@page "/Account"
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-<h3>Account</h3>
+<MudTabs Elevation="25" Color="Color.Transparent" Rounded="true" PanelClass="mt-6">
+    <MudTabPanel Text="General">
+        <MudGrid>
+            <MudItem xs="12" sm="4" md="3">
+                <MudCard Elevation="25">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText>Public Profile</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <div class="d-flex justify-center mb-4">
+                            <MudAvatar Image="@AvatarImageLink" Style="height:100px; width:100px;">
+                                @if (AvatarImageLink == null)
+                                {
+                                    <MudIcon Icon="@AvatarIcon" Size="Size.Large"></MudIcon>
+                                }
+                            </MudAvatar>
+
+                        </div>
+                        <MudText Align="Align.Center">@FirstName @LastName</MudText>
+                        <MudText Align="Align.Center">@JobTitle</MudText>
+                    </MudCardContent>
+                    <MudCardActions Class="d-flex justify-center">
+                        <MudButton OnClick="DeletePicture" Color="@AvatarButtonColor">@AvatarButtonText</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="8" md="9">
+                <MudCard Elevation="25">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText>Profile Details</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="LastName" Label="First Name" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="JobTitle" Label="Job Title" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="Email" Label="Email" Variant="Variant.Outlined" HelperText="Dont worry, we shall not spam!" InputType="InputType.Email" />
+                            </MudItem>
+                            
+                        </MudGrid>
+                    </MudCardContent>
+                    <MudCardActions Class="pb-4 pl-4">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" @onclick="@(() => SaveChanges("Profile details saved", Severity.Success))">Save Changes</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Security">
+        <MudForm @ref="form">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText>Change Password</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField T="string" Label="Password" Variant="Variant.Outlined" InputType="InputType.Password" @ref="pwField1" Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true" RequiredError="Password is required!" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField T="string" Label="Password Confirmation" Variant="Variant.Outlined" InputType="InputType.Password" Validation="@(new Func<string, string>(PasswordMatch))" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField T="string" Label="Current Password" Variant="Variant.Outlined" InputType="InputType.Password" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions Class="pb-4 pl-4">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" @onclick="@(() => SaveChanges("Current Password is incorrect", Severity.Error))">Change Password</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudForm>
+    </MudTabPanel>
+</MudTabs>
 
 
