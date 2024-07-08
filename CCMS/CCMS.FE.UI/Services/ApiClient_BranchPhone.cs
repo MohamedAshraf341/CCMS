@@ -1,6 +1,7 @@
 ﻿using CCMS.Common.Const;
 using CCMS.Common.Dto;
 using CCMS.Common.Dto.Request;
+using CCMS.Common.Dto.Request.Phone;
 using CCMS.Common.Dto.Response;
 using System;
 using System.Collections.Generic;
@@ -13,19 +14,19 @@ namespace CCMS.FE.UI.Services
         public ApiClient_BranchPhone(ApiHttpClient apiHttpClient) : base(apiHttpClient)
         {
         }
-        internal async Task<List<PhoneNumbersDto>> GetBranchPhones(Guid branchId)
+        internal async Task<List<PhoneNumberDto>> GetBranchPhones(Guid branchId)
         {
-            var res = await ApiHttpClient.Get<List<PhoneNumbersDto>>(Router.BranchPhone.GetBranchPhones+ $"/{branchId}");
+            var res = await ApiHttpClient.Get<List<PhoneNumberDto>>(Router.BranchPhone.GetBranchPhones+ $"/{branchId}");
             return res;
         }
-        internal async Task<BaseResponse> AddBranchPhone(PhoneNumbersDto model)
+        internal async Task<BaseResponse> AddBranchPhone(AddOrEditPhone model)
         {
-            var res= await ApiHttpClient.Post<PhoneNumbersDto, BaseResponse>(Router.BranchPhone.AddBranchPhone, model);
+            var res= await ApiHttpClient.Post<AddOrEditPhone, BaseResponse>(Router.BranchPhone.AddBranchPhone, model);
             return res;
         }
-        internal async Task<BaseResponse> EditBranchPhone(PhoneNumbersDto model)
+        internal async Task<BaseResponse> EditBranchPhone(AddOrEditPhone model)
         {
-            var res = await ApiHttpClient.Put<PhoneNumbersDto, BaseResponse>(Router.BranchPhone.EditBranchPhone, model);
+            var res = await ApiHttpClient.Put<AddOrEditPhone, BaseResponse>(Router.BranchPhone.EditBranchPhone, model);
             return res;
         }
         internal async Task<BaseResponse> DeleteBranchPhone(Guid id)

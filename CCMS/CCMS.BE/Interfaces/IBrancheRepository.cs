@@ -7,7 +7,8 @@ namespace CCMS.BE.Interfaces
 {
     public interface IBrancheRepository:IBaseRepository<Branch>
     {
-        Task<IEnumerable<Branch>> GetAll(Guid? restaurantId);
+        Task<IEnumerable<Branch>> GetAll(Common.Dto.Request.Branch.GetBranches model);
         Task<Branch> GetByIdWithInclude(Guid id);
+        Task<Branch> GetByUserId(Guid userId);
     }
 }

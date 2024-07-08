@@ -80,6 +80,9 @@ namespace CCMS.BE.Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SystemType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -125,7 +128,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasIndex("RestaurantId");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.BranchPhone", b =>
@@ -145,7 +148,32 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("BranchPhones");
+                    b.ToTable("BranchPhones", (string)null);
+                });
+
+            modelBuilder.Entity("CCMS.BE.Data.Models.BranchUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("BranchUser", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.Customer", b =>
@@ -169,7 +197,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.MenuItem", b =>
@@ -198,7 +226,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("MenuItems");
+                    b.ToTable("MenuItems", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.MenuItemOrder", b =>
@@ -219,7 +247,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("MenuItemOrders");
+                    b.ToTable("MenuItemOrders", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.Order", b =>
@@ -242,7 +270,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.Restaurant", b =>
@@ -257,7 +285,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Restaurants");
+                    b.ToTable("Restaurants", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.Update", b =>
@@ -271,7 +299,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Updates");
+                    b.ToTable("Updates", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.UpdateOrder", b =>
@@ -292,7 +320,7 @@ namespace CCMS.BE.Data.Migrations
 
                     b.HasIndex("UpdateId");
 
-                    b.ToTable("UpdateOrders");
+                    b.ToTable("UpdateOrders", (string)null);
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.VerifyCode", b =>
@@ -454,7 +482,7 @@ namespace CCMS.BE.Data.Migrations
 
             modelBuilder.Entity("CCMS.BE.Data.Models.ApplicationUser", b =>
                 {
-                    b.OwnsMany("CCMS.BE.Data.Models.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("CCMS.BE.Data.Models.ApplicationUser.RefreshTokens#CCMS.BE.Data.Models.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -509,6 +537,25 @@ namespace CCMS.BE.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Branch");
+                });
+
+            modelBuilder.Entity("CCMS.BE.Data.Models.BranchUser", b =>
+                {
+                    b.HasOne("CCMS.BE.Data.Models.Branch", "Branch")
+                        .WithMany("BranchUsers")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CCMS.BE.Data.Models.ApplicationUser", "User")
+                        .WithMany("BranchUsers")
+                        .HasForeignKey("UserId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.MenuItem", b =>
@@ -635,12 +682,16 @@ namespace CCMS.BE.Data.Migrations
 
             modelBuilder.Entity("CCMS.BE.Data.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("BranchUsers");
+
                     b.Navigation("Codes");
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.Branch", b =>
                 {
                     b.Navigation("BranchPhones");
+
+                    b.Navigation("BranchUsers");
 
                     b.Navigation("MenuItems");
                 });

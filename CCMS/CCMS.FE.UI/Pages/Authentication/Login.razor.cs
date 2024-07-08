@@ -5,8 +5,8 @@ using MudBlazor;
 using Serilog;
 using System;
 using System.Threading.Tasks;
-using CCMS.Common.Dto.Request;
 using CCMS.Common.Models;
+using CCMS.Common.Dto.Request.Auth;
 
 namespace CCMS.FE.UI.Pages.Authentication
 {
@@ -22,7 +22,7 @@ namespace CCMS.FE.UI.Pages.Authentication
         [Inject] NavigationManager NavigationManager { get; set; }
         [Inject] IDialogService DialogService { get; set; }
 
-        LoginRequest Item = new LoginRequest();
+        Common.Dto.Request.Auth.Login Item = new Common.Dto.Request.Auth.Login();
 
 
         private async Task LoginAsync()

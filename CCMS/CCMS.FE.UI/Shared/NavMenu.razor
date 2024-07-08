@@ -3,15 +3,12 @@
 <MudDivider Class="mb-4" />
 <MudNavMenu>
     <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
-    <MudNavLink Href="/Restaurants" Icon="@Icons.Material.Filled.FoodBank" Match="NavLinkMatch.All">Restaurants</MudNavLink>
-
-    @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name, Common.Const.Roles.Admin.Name))
-    {
-        <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Handyman" Expanded="false">
-            <MudNavLink Href="Settings/Users" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
-            <MudNavLink Href="Settings/Roles" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VerifiedUser">Roles</MudNavLink>
-        </MudNavGroup>
-    }
+    <MudNavLink Href="/Restaurants" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Restaurants</MudNavLink>
+    <MudNavLink Href="/Branches" Icon="@Icons.Material.Filled.FoodBank" Match="NavLinkMatch.All">Branches</MudNavLink>
+    <MudNavLink Href="/MenuItems" Icon="@Icons.Material.Filled.ListAlt" Match="NavLinkMatch.All">MenuItems</MudNavLink>
+    <MudNavLink Href="/Orders" Icon="@Icons.Material.Filled.AddIcCall" Match="NavLinkMatch.All">Orders</MudNavLink>
+    <MudNavLink Href="/Clients" Icon="@Icons.Material.Filled.SupervisedUserCircle" Match="NavLinkMatch.All">Clients</MudNavLink>
+    <MudNavLink Href="/Users" Icon="@Icons.Material.Filled.People" Match="NavLinkMatch.All">Users</MudNavLink>
 </MudNavMenu>
 
  

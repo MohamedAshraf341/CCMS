@@ -19,6 +19,7 @@ namespace CCMS.BE.Data.Models
         public Restaurant Restaurant { get; set; }
         public ICollection<BranchPhone> BranchPhones { get; set; }
         public ICollection<MenuItem> MenuItems { get; set; }
+        public ICollection<BranchUser> BranchUsers { get; set; }
 
 
     }

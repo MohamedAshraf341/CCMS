@@ -1,0 +1,31 @@
+﻿@page "/Restaurants"
+@using CCMS.Common.Dto
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+<MudContainer>
+    <MudTable Loading="Loading" Items="@Elements" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<RestaurantDto,bool>(FilterFunc1)">
+        <ToolBarContent>
+            @*             <MudText Typo="Typo.h6">Periodic Elements</MudText>
+            *@            <MudSpacer />
+            <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mr-2"></MudTextField>
+            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Add" Title="Add new Resturant" OnClick="AddResturant" />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Branches Count</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
+            <MudTd DataLabel="Branches Count"><MudLink Color="Color.Dark" Underline="Underline.None" OnClick="@( () =>NavigateToBranchPage(context))">@GetHighlightedText(context.BranchCount.ToString())</MudLink></MudTd>
+            <MudTd DataLabel="">
+                <MudFab Color="Color.Secondary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Edit" Title="Delete Resturant" OnClick="(() => EditResturant(context))" />
+                <MudFab Color="Color.Error" Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete" Title="Delete Resturant" OnClick="(() => DeleteResturant(context))" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>

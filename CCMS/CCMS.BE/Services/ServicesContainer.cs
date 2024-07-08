@@ -11,7 +11,10 @@ namespace CCMS.BE.Services
             services.AddTransient<IMailingService, MailingService>();
             services.AddScoped<OrderService>();
             services.AddScoped<ReasturantService>();
-
+            services.AddScoped<BranchService>();
+            services.AddScoped<OrderService>();
+            services.AddScoped<PhoneService>();
+            services.AddScoped<ClientService>();
         }
     }
 }

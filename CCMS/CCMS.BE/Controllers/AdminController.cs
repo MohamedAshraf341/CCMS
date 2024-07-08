@@ -1,6 +1,6 @@
 ﻿using CCMS.BE.Interfaces;
 using CCMS.Common.Const;
-using CCMS.Common.Dto.Request;
+using CCMS.Common.Dto.Request.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -18,13 +18,13 @@ namespace CCMS.BE.Controllers
             _managementUsersService = managementUsersService;
         }
         [HttpPost(Router.Admin.GetUsers)]
-        public async Task<IActionResult> GetUsers(Common.Dto.Request.GetUsersRequest model)
+        public async Task<IActionResult> GetUsers(GetUsers model)
         {
             var res = await _managementUsersService.GetUsersAsync(model);
             return Ok(res);
         }
         [HttpPost(Router.Admin.AddUser)]
-        public async Task<IActionResult> AddUser(AddUserRequest model)
+        public async Task<IActionResult> AddUser(AddUser model)
         {
             var res = await _managementUsersService.AddUserAsync(model);
             return Ok(res);

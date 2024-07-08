@@ -1,4 +1,5 @@
-﻿using CCMS.Common.Dto.Response;
+﻿using CCMS.Common.Dto.Request.Auth;
+using CCMS.Common.Dto.Response.Auth;
 using Microsoft.Extensions.Options;
 using Serilog;
 using System;
@@ -62,7 +63,7 @@ namespace CCMS.FE.UI.Services
 
             return context;
         }
-        public async Task<TokenResponse> CanLogin(Common.Dto.Request.LoginRequest model)
+        public async Task<GetToken> CanLogin(Login model)
         {
             var loginResponse = await Account.Login(model);
             return loginResponse;

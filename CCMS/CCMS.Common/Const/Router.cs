@@ -9,6 +9,7 @@
             public const string ConfirmEmail = Prefix+"/ConfirmEmail";
             public const string LogIn = Prefix + "/LogIn";
             public const string SendVerificationCode = Prefix + "/SendVerificationCode";
+            public const string RefreshToken = Prefix + "/RefreshToken";
             public const string VerifyCode = Prefix + "/VerifyCode";
             public const string GetUserById = Prefix + "/GetUserById";
             public const string UpdateUser = Prefix + "/UpdateUser";
@@ -45,6 +46,21 @@
             public const string AddBranche = Prefix + "/AddBranche";
             public const string EditBranche = Prefix + "/EditBranche";
             public const string DeleteBranche = Prefix + "/DeleteBranche";
+        }
+        public static class MenuItem
+        {
+            public const string Prefix = "MenuItem";
+
+        }
+        public static class Order
+        {
+            public const string Prefix = "Order";
+
+        }
+        public static class Client
+        {
+            public const string Prefix = "Client";
+
         }
     }
 }

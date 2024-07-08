@@ -2,8 +2,11 @@
 using CCMS.BE.Interfaces;
 using CCMS.BE.Settings;
 using CCMS.Common.Dto;
-using CCMS.Common.Dto.Request;
+using CCMS.Common.Dto.Request.Auth;
+using CCMS.Common.Dto.Request.User;
 using CCMS.Common.Dto.Response;
+using CCMS.Common.Dto.Response.Auth;
+using CCMS.Common.Dto.Response.User;
 using CCMS.Common.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -49,7 +52,7 @@ public class ManagementUsersService : IManagementUsersService
         _uow = uow;
         _urlHelperFactory = urlHelperFactory;
     }
-    public async Task<AddUserResponse?> AddUserAsync(AddUserRequest model)
+    public async Task<AddUserResponse?> AddUserAsync(AddUser model)
     {
         try
         {
@@ -59,6 +62,7 @@ public class ManagementUsersService : IManagementUsersService
             {
                 Email = model.Email,
                 Name = model.Name,
+                UserName=model.Email
             };
             var passwordUser = PasswordGenerator.GeneratePassword();
             var result = await _userManager.CreateAsync(user, passwordUser);
@@ -81,27 +85,27 @@ public class ManagementUsersService : IManagementUsersService
                 Password= passwordUser,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
-            //var confirmationToke=await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            //var encodeToken = Encoding.UTF8.GetBytes(confirmationToke);
-            //var newToken = WebEncoders.Base64UrlEncode(encodeToken);
-            //var requestScheme = _httpContextAccessor.HttpContext.Request.Scheme;
-            //var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext());
+            var confirmationToke = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodeToken = Encoding.UTF8.GetBytes(confirmationToke);
+            var newToken = WebEncoders.Base64UrlEncode(encodeToken);
+            var requestScheme = _httpContextAccessor.HttpContext.Request.Scheme;
+            var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext());
 
-            //var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { user.Id, newToken }, requestScheme);
+            var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { user.Id, newToken }, requestScheme);
 
-            //var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\WelcomeTemplate.html";
-            //var str = new StreamReader(filePath);
+            var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\WelcomeTemplate.html";
+            var str = new StreamReader(filePath);
 
-            //var mailText = str.ReadToEnd();
-            //str.Close();
+            var mailText = str.ReadToEnd();
+            str.Close();
 
-            //mailText = mailText
-            //    .Replace("[name]", response.Name)
-            //    .Replace("[email]", response.Email)
-            //    .Replace("[password]", response.Password)
-            //    .Replace("[confirmationLink]", confirmationLink);
+            mailText = mailText
+                .Replace("[name]", response.Name)
+                .Replace("[email]", response.Email)
+                .Replace("[password]", response.Password)
+                .Replace("[confirmationLink]", confirmationLink);
 
-            //await _mailingService.SendEmailAsync(response.Email, "Welcome to our Application", mailText);
+            await _mailingService.SendEmailAsync(response.Email, "Welcome to our Application", mailText);
             return response;
         }
         catch (Exception ex)
@@ -111,7 +115,7 @@ public class ManagementUsersService : IManagementUsersService
 
 
     }
-    public async Task<BaseResponse> AddRoleAsync(AddRoleRequest model)
+    public async Task<BaseResponse> AddRoleAsync(AddRole model)
     {
         try
         {
@@ -138,23 +142,26 @@ public class ManagementUsersService : IManagementUsersService
         }
        
     }
-    public async Task<TokenResponse> LoginAsync(LoginRequest model)
+    public async Task<GetToken> LoginAsync(Login model)
     {
         try
         {
-            var authModel = new TokenResponse();
+            var authModel = new GetToken();
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user is null)
-                return new TokenResponse {Success=false, Message = "Email is incorrect!" };
+                return new GetToken {Success=false, Message = "Email is incorrect!" };
             if(!await _userManager.CheckPasswordAsync(user, model.Password))
-                return new TokenResponse { Success = false, Message = "Password is incorrect!" };
+                return new GetToken { Success = false, Message = "Password is incorrect!" };
+            if(!await _userManager.IsEmailConfirmedAsync(user))
+                return new GetToken { Success = false, Message = "This Email Invalid." };
 
             var roles = await _userManager.GetRolesAsync(user);
             var jwtSecurityToken = await CreateJwtToken(user);
 
             authModel.Message = "Login is successfuly";
             authModel.Success = true;
+            authModel.IsAuthenticated = true;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.Roles = roles.ToList();
@@ -162,8 +169,23 @@ public class ManagementUsersService : IManagementUsersService
             authModel.Name=user.Name;
             authModel.Email = user.Email;
             authModel.Id= user.Id;
-
-            if (user.RefreshTokens.Any(t => t.IsActive))
+            authModel.SystemType = user.SystemType;
+            if(user.SystemType == Common.Const.SystemType.Restaurant)
+            {
+                var branch = await _uow.Branche.GetByUserId(Guid.Parse(user.Id));
+                authModel.BranchId = branch.Id;
+            }
+            if(user.RefreshTokens.Count()==0)
+            {
+                var refreshToken = GenerateRefreshToken();
+                authModel.RefreshToken = refreshToken.Token;
+                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                user.RefreshTokens.Add(refreshToken);
+              
+                await _userManager.UpdateAsync(user);
+                var res = await _uow.CompleteAsync();
+            }
+            else if (user.RefreshTokens.Any(t => t.IsActive))
             {
                 var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
                 authModel.RefreshToken = activeRefreshToken.Token;
@@ -176,6 +198,8 @@ public class ManagementUsersService : IManagementUsersService
                 authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
                 user.RefreshTokens.Add(refreshToken);
                 await _userManager.UpdateAsync(user);
+                var res = await _uow.CompleteAsync();
+
             }
 
 
@@ -183,25 +207,25 @@ public class ManagementUsersService : IManagementUsersService
         }
         catch (Exception ex)
         {
-            return new TokenResponse { Success = false, Message = ex.Message };
+            return new GetToken { Success = false, Message = ex.Message };
         }
     }
-    public async Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest model)
+    public async Task<GetToken> RefreshTokenAsync(Common.Dto.Request.Auth.RefreshToken model)
     {
         try
         {
-            var authModel = new TokenResponse();
+            var authModel = new GetToken();
 
             var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == model.Token));
 
             if (user == null)
-                return new TokenResponse {Success=false, Message = "Invalid token" };
+                return new GetToken {Success=false, Message = "Invalid token" };
 
 
             var refreshToken = user.RefreshTokens.Single(t => t.Token == model.Token);
 
             if (!refreshToken.IsActive)
-                return new TokenResponse { Success = false, Message = "Inactive token" };
+                return new GetToken { Success = false, Message = "Inactive token" };
 
 
             refreshToken.RevokedOn = DateTime.UtcNow;
@@ -209,8 +233,9 @@ public class ManagementUsersService : IManagementUsersService
             var newRefreshToken = GenerateRefreshToken();
             user.RefreshTokens.Add(newRefreshToken);
             await _userManager.UpdateAsync(user);
-
+            await _uow.CompleteAsync();
             var jwtToken = await CreateJwtToken(user);
+            authModel.IsAuthenticated = true;
             authModel.Success = true;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
             authModel.RefreshToken = newRefreshToken.Token;
@@ -220,7 +245,7 @@ public class ManagementUsersService : IManagementUsersService
         }
         catch (Exception ex) 
         {
-            return new TokenResponse { Success = false,Message = ex.Message};
+            return new GetToken { Success = false,Message = ex.Message};
         }
     }
     private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
@@ -254,7 +279,7 @@ public class ManagementUsersService : IManagementUsersService
 
         return jwtSecurityToken;
     }
-    private RefreshToken GenerateRefreshToken()
+    private Data.Models.RefreshToken GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
 
@@ -262,14 +287,14 @@ public class ManagementUsersService : IManagementUsersService
 
         generator.GetBytes(randomNumber);
 
-        return new RefreshToken
+        return new Data.Models.RefreshToken
         {
             Token = Convert.ToBase64String(randomNumber),
             ExpiresOn = DateTime.UtcNow.AddDays(10),
             CreatedOn = DateTime.UtcNow
         };
     }
-    public async Task<BaseResponse> SendVerificationCodeAsync(SendCodeToEmailRequest model)
+    public async Task<BaseResponse> SendVerificationCodeAsync(SendCodeToEmail model)
     {
         try
         {
@@ -289,7 +314,7 @@ public class ManagementUsersService : IManagementUsersService
             var checkVerificationCode=await _uow.VerifyCodes.GetByUserId(user.Id);
             if (checkVerificationCode == null)
             {
-                var verificationCode = new VerifyCode
+                var verificationCode = new Data.Models.VerifyCode
                 {
                     Code = code,
                     CreationDate = DateTime.UtcNow,
@@ -314,7 +339,7 @@ public class ManagementUsersService : IManagementUsersService
             return new BaseResponse { Success = false, Message = ex.Message };
         }
     }
-    public async Task<BaseResponse> VerifyCodeAsync(VerifyCodeRequest model)
+    public async Task<BaseResponse> VerifyCodeAsync(Common.Dto.Request.Auth.VerifyCode model)
     {
         try
         {
@@ -350,19 +375,51 @@ public class ManagementUsersService : IManagementUsersService
             return new BaseResponse { Success = false, Message = ex.Message };
         }
     }
-    public async Task<List<GetUsersResponse>> GetUsersAsync(Common.Dto.Request.GetUsersRequest model)
+    public async Task<Common.Dto.Response.User.GetUsers> GetUsersAsync(Common.Dto.Request.User.GetUsers model)
     {
-
-        var users = await _userManager.Users.Where(u => u.Id != model.UserId)
-            .Select(u => new GetUsersResponse
+        try
+        {
+            var items = _userManager.Users
+    .Include(x => x.BranchUsers)
+    .ThenInclude(x => x.Branch)
+    .ThenInclude(x => x.Restaurant).AsQueryable();
+            FilterUsers(items, model);
+            var users = await items.Select(u => new UsersDto
             {
                 UserId = u.Id,
                 Name = u.Name,
                 Email = u.Email,
-                Roles = _userManager.GetRolesAsync(u).Result.ToList()
-            })
-                .ToListAsync();
-        return users;
+                Roles = _userManager.GetRolesAsync(u).Result.ToList(),
+                Government = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.Government,
+                City = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.City,
+                Area = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.Area,
+                Restaurant = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.Restaurant.Name,
+
+            }).ToListAsync();
+            var res = new Common.Dto.Response.User.GetUsers { Users = users, Success = true, Message = "List of Users" };
+            return res;
+        }
+        catch (Exception ex)
+        {
+            return new Common.Dto.Response.User.GetUsers { Success = false, Message = ex.Message };
+        }
+
+    }
+    private IQueryable<ApplicationUser> FilterUsers(IQueryable<ApplicationUser> items, Common.Dto.Request.User.GetUsers modelFilter)
+    {
+        if (!string.IsNullOrEmpty(modelFilter.UserId))
+            items.Where(u => u.Id != modelFilter.UserId);
+        if (!string.IsNullOrEmpty(modelFilter.Role)&& !string.IsNullOrEmpty(modelFilter.UserType))
+        {
+            if (modelFilter.UserType == Common.Const.SystemType.System)
+                items.Where(u => u.SystemType == Common.Const.SystemType.System);
+            else if(modelFilter.UserType == Common.Const.SystemType.Restaurant)
+                items.Where(u => u.SystemType == Common.Const.SystemType.Restaurant);
+        }
+        if(modelFilter.BranchId.HasValue)
+            items.Where(x => x.BranchUsers.Any(x => x.BranchId == modelFilter.BranchId.Value));
+
+        return items;
     }
     public async Task<BaseResponse> DeleteUserAsync(string userId)
     {
@@ -379,12 +436,13 @@ public class ManagementUsersService : IManagementUsersService
             return new BaseResponse { Success = false, Message = ex.Message };
         }
     }
-    public async Task<GetUsersResponse?> GetUserByIdAsync(string userId)
+    public async Task<UsersDto?> GetUserByIdAsync(string userId)
     {
         var res = await _userManager.FindByIdAsync(userId);
         if (res == null)
             return null;
-        var user=new GetUsersResponse {
+        var user=new UsersDto
+        {
             UserId = res.Id,
             Name = res.Name,
             Email=res.Email,
@@ -393,7 +451,7 @@ public class ManagementUsersService : IManagementUsersService
             Roles= _userManager.GetRolesAsync(res).Result.ToList() };
         return user;
     }
-    public async Task<BaseResponse> UpdateUserAsync(UpdateUserRequest model)
+    public async Task<BaseResponse> UpdateUserAsync(UpdateUser model)
     {
         try
         {
@@ -413,7 +471,7 @@ public class ManagementUsersService : IManagementUsersService
             return new BaseResponse { Success = false, Message = ex.Message };
         }
     }
-    public async Task<BaseResponse> ResetPasswordAsync(ResetPasswordRequest model)
+    public async Task<BaseResponse> ResetPasswordAsync(ResetPassword model)
     {
         try
         {
@@ -443,7 +501,7 @@ public class ManagementUsersService : IManagementUsersService
         refreshToken.RevokedOn = DateTime.UtcNow;
 
         await _userManager.UpdateAsync(user);
-
+        await _uow.CompleteAsync();
         return new BaseResponse { Success = true };
     }
 }

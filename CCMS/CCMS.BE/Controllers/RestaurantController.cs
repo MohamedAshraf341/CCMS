@@ -1,8 +1,8 @@
 ﻿using CCMS.BE.Interfaces;
 using CCMS.BE.Services;
 using CCMS.Common.Const;
-using CCMS.Common.Dto.Request;
-using CCMS.Common.Dto.Response;
+using CCMS.Common.Dto.Request.Restaurant;
+using CCMS.Common.Dto.Response.Reasturant;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -27,13 +27,13 @@ namespace CCMS.BE.Controllers
             return Ok(items);
         }
         [HttpPost(Router.Restaurant.AddRestaurant)]
-        public async Task<IActionResult> AddRestaurant(AddReasturantRequest model)
+        public async Task<IActionResult> AddRestaurant(AddOrEditRestaurant model)
         {
             var item = await _reasturantService.AddReasturant(model);
             return Ok(item);
         }
         [HttpPut(Router.Restaurant.EditRestaurant)]
-        public async Task<IActionResult> EditRestaurant(GetReasturantResponse model)
+        public async Task<IActionResult> EditRestaurant(AddOrEditRestaurant model)
         {
             var item = await _reasturantService.EditReasturant(model);
             return Ok(item);

@@ -1,8 +1,8 @@
 using CCMS.FE.UI.Services;
 using Microsoft.AspNetCore.Components;
 using System.Threading.Tasks;
-using CCMS.Common.Dto.Response;
 using System;
+using CCMS.Common.Dto.Response.Auth;
 
 namespace CCMS.FE.UI.Components.User
 {
@@ -15,7 +15,7 @@ namespace CCMS.FE.UI.Components.User
 
         [Parameter]
         public string Style { get; set; }
-        public TokenResponse? User { get; private set; }
+        public GetToken? User { get; private set; }
         public string UserPicture { get; private set; }
 
         protected override async Task OnInitializedAsync()

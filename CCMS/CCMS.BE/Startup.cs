@@ -17,6 +17,7 @@ using CCMS.BE.Data.Models;
 using CCMS.BE.Settings;
 using CCMS.BE.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 
 namespace CCMS.BE
 {
@@ -37,12 +38,17 @@ namespace CCMS.BE
 
             services.Configure<JwtSettings>(Configuration.GetSection("JWT"));
             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.User.AllowedUserNameCharacters = "xxxxxx";
+                });
+                services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"),
                         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
 
             );
+            
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

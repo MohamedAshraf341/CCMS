@@ -3,14 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using CCMS.Common.Dto.Response;
+using CCMS.Common.Dto.Response.Auth;
 
 namespace CCMS.FE.UI.Services
 {
     public class BlazorCookieLoginMiddleware
     {
-        public static IDictionary<Guid, TokenResponse> Logins { get; private set; }
-            = new ConcurrentDictionary<Guid, TokenResponse>();
+        public static IDictionary<Guid, GetToken> Logins { get; private set; }
+            = new ConcurrentDictionary<Guid, GetToken>();
 
 
         private readonly RequestDelegate _next;

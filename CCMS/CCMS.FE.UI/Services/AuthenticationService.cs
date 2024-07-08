@@ -1,4 +1,4 @@
-﻿using CCMS.Common.Dto.Response;
+﻿using CCMS.Common.Dto.Response.Auth;
 using CCMS.Common.Helpers;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -30,7 +30,7 @@ namespace CCMS.FE.UI.Services
             var decryptedText = symmetricEncryptDecrypt.Decrypt(encryptedText, KeyIVBase64, Key);
             return decryptedText;
         }
-        public TokenResponse? GetUser()
+        public GetToken? GetUser()
         {
             try
             {
@@ -39,7 +39,7 @@ namespace CCMS.FE.UI.Services
                     return null;
 
                 var userJs = Decrypt(cookieValue);
-                var user = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenResponse>(userJs);
+                var user = Newtonsoft.Json.JsonConvert.DeserializeObject<GetToken>(userJs);
                 return user;
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace CCMS.FE.UI.Services
             }
         }
 
-        public bool SetUser(TokenResponse user)
+        public bool SetUser(GetToken user)
         {
             try
             {

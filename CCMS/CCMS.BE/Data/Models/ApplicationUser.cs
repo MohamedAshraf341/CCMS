@@ -9,6 +9,9 @@ public class ApplicationUser : IdentityUser
     public byte[]? Picture { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public string? Gender { get; set; }
+    public string? SystemType { get; set; }
     public ICollection<VerifyCode> Codes { get; set; }
-    public List<RefreshToken> RefreshTokens { get; set; }
+    public List<RefreshToken>? RefreshTokens { get; set; }
+    public ICollection<BranchUser> BranchUsers { get; set; }
+
 }

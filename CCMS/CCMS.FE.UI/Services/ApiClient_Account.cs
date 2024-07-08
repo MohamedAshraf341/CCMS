@@ -1,7 +1,7 @@
 ﻿using CCMS.Common.Const;
-using CCMS.Common.Dto;
-using CCMS.Common.Dto.Request;
+using CCMS.Common.Dto.Request.Auth;
 using CCMS.Common.Dto.Response;
+using CCMS.Common.Dto.Response.Auth;
 using System.Threading.Tasks;
 
 namespace CCMS.FE.UI.Services
@@ -11,14 +11,19 @@ namespace CCMS.FE.UI.Services
         public ApiClient_Account(ApiHttpClient apiHttpClient) : base(apiHttpClient)
         {
         }
-        internal async Task<TokenResponse> Login(LoginRequest request)
+        internal async Task<GetToken> Login(Login request)
         {
-            var res = await ApiHttpClient.Post<LoginRequest, TokenResponse>(Router.Account.LogIn, request);
+            var res = await ApiHttpClient.Post<Login, GetToken>(Router.Account.LogIn, request);
             return res;
         }
-        internal async Task<BaseResponse> LogOut(string token)
+        internal async Task<BaseResponse> LogOut(RefreshToken model)
         {
-            var res = await ApiHttpClient.Get<BaseResponse>(Router.Account.LogOut + $"{token}");
+            var res = await ApiHttpClient.Post<RefreshToken,BaseResponse>(Router.Account.LogOut, model);
+            return res;
+        }
+        internal async Task<BaseResponse> RefreshToken(RefreshToken model)
+        {
+            var res = await ApiHttpClient.Post<RefreshToken,BaseResponse>(Router.Account.RefreshToken, model);
             return res;
         }
     }

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CCMS.Common.Dto.Request;
+using CCMS.Common.Dto.Request.Auth;
+using CCMS.Common.Models;
 using CCMS.FE.UI.Services;
 using CCMS.FE.UI.Theme;
 using Microsoft.AspNetCore.Components;
@@ -47,13 +50,15 @@ namespace CCMS.FE.UI.Shared
             _themeManager.DefaultBorderRadius = 3;
             NavigationManager.LocationChanged += LocationChanged;
         }
-        void OnClickLogout()
+        private async Task OnClickLogout()
         {
-            //var user= AuthenticationService.GetUser();
-            //if (user != null)
-            //{
-            //    var res=await ApiClient.Account.LogOut(user.Token);
-            //}
+            var user = AuthenticationService.GetUser();
+            if (user != null)
+            {
+                var req = new RefreshToken { Token = user.RefreshToken };
+                var res = await ApiClient.Account.LogOut(req);
+
+            }
             NavigationManager.NavigateTo($"/logout", true);
         }
         private void LocationChanged(object sender, LocationChangedEventArgs e)

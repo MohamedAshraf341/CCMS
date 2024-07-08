@@ -1,7 +1,7 @@
 ﻿using CCMS.Common.Const;
-using CCMS.Common.Dto;
-using CCMS.Common.Dto.Request;
+using CCMS.Common.Dto.Request.Restaurant;
 using CCMS.Common.Dto.Response;
+using CCMS.Common.Dto.Response.Reasturant;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,19 +13,19 @@ namespace CCMS.FE.UI.Services
         public ApiClient_Restaurant(ApiHttpClient apiHttpClient) : base(apiHttpClient)
         {
         }
-        internal async Task<List<GetReasturantResponse>> GetRestaurants()
+        internal async Task<GetReasturants> GetRestaurants()
         {
-            var res = await ApiHttpClient.Get<List<GetReasturantResponse>>(Router.Restaurant.GetRestaurants);
+            var res = await ApiHttpClient.Get<GetReasturants>(Router.Restaurant.GetRestaurants);
             return res;
         }
-        internal async Task<BaseResponse> AddRestaurant(AddReasturantRequest model)
+        internal async Task<BaseResponse> AddRestaurant(AddOrEditRestaurant model)
         {
-            var res= await ApiHttpClient.Post<AddReasturantRequest, BaseResponse>(Router.Restaurant.AddRestaurant, model);
+            var res= await ApiHttpClient.Post<AddOrEditRestaurant, BaseResponse>(Router.Restaurant.AddRestaurant, model);
             return res;
         }
-        internal async Task<BaseResponse> EditRestaurant(GetReasturantResponse model)
+        internal async Task<BaseResponse> EditRestaurant(AddOrEditRestaurant model)
         {
-            var res = await ApiHttpClient.Put<GetReasturantResponse, BaseResponse>(Router.Restaurant.EditRestaurant, model);
+            var res = await ApiHttpClient.Put<AddOrEditRestaurant, BaseResponse>(Router.Restaurant.EditRestaurant, model);
             return res;
         }
         internal async Task<BaseResponse> DeleteRestaurant(Guid id)
