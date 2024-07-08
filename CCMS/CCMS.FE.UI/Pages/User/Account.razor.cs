@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace CCMS.FE.UI.Pages.Personal
+namespace CCMS.FE.UI.Pages.User
 {
     public partial class Account
     {
