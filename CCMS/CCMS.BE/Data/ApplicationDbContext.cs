@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using CCMS.BE.Data.Models;
+using System.Reflection.Emit;
 
 namespace CCMS.BE.Data
 {
@@ -33,7 +34,19 @@ namespace CCMS.BE.Data
             builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins", "security");
             builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims", "security");
             builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens", "security");
+            // Configure Order - CreatedUser relationship
+            builder.Entity<Order>()
+                .HasOne(o => o.CreatedUser)
+                .WithMany(u => u.CreatedOrders)
+                .HasForeignKey(o => o.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Configure Order - ReceivedUser relationship
+            builder.Entity<Order>()
+                .HasOne(o => o.ReceivedUser)
+                .WithMany(u => u.ReceivedOrders)
+                .HasForeignKey(o => o.ReceivedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

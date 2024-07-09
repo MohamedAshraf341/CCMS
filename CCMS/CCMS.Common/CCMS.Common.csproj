@@ -14,7 +14,6 @@
     <Folder Include="Dto\Request\MenuItem\" />
     <Folder Include="Dto\Response\Client\" />
     <Folder Include="Dto\Response\MenuItem\" />
-    <Folder Include="Dto\Response\Order\" />
   </ItemGroup>
 
 </Project>

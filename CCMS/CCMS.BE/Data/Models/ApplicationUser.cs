@@ -10,8 +10,11 @@ public class ApplicationUser : IdentityUser
     public DateTime? DateOfBirth { get; set; }
     public string? Gender { get; set; }
     public string? SystemType { get; set; }
-    public ICollection<VerifyCode> Codes { get; set; }
+    public ICollection<VerifyCode>? Codes { get; set; }
     public List<RefreshToken>? RefreshTokens { get; set; }
-    public ICollection<BranchUser> BranchUsers { get; set; }
+    public ICollection<BranchUser>? BranchUsers { get; set; }
+    public ICollection<Order>? CreatedOrders { get; set; }
+    public ICollection<Order>? ReceivedOrders { get; set; }
+
 
 }

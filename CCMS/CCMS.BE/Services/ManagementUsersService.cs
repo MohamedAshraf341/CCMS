@@ -488,20 +488,27 @@ public class ManagementUsersService : IManagementUsersService
     }
     public async Task<BaseResponse> RevokeTokenAsync(string token)
     {
-        var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+        try
+        {
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
 
-        if (user == null)
-            return new BaseResponse { Success=false};
+            if (user == null)
+                return new BaseResponse { Success = false , Message = "User Not Found" };
 
-        var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
 
-        if (!refreshToken.IsActive)
-            return new BaseResponse { Success = false };
+            if (!refreshToken.IsActive)
+                return new BaseResponse { Success = false, Message = "refreshToken not active" };
 
-        refreshToken.RevokedOn = DateTime.UtcNow;
+            refreshToken.RevokedOn = DateTime.UtcNow;
 
-        await _userManager.UpdateAsync(user);
-        await _uow.CompleteAsync();
-        return new BaseResponse { Success = true };
+            await _userManager.UpdateAsync(user);
+            await _uow.CompleteAsync();
+            return new BaseResponse { Success = true , Message ="Log Out Successfully"};
+        }
+        catch(Exception ex)
+        {
+            return new BaseResponse { Success = false,Message=ex.Message };
+        }
     }
 }

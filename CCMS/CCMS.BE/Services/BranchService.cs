@@ -18,11 +18,11 @@ namespace CCMS.BE.Services
         {
             _uow = uow;
         }
-        public async Task<Common.Dto.Response.Branch.GetBranches> GetBranches(Common.Dto.Request.Branch.GetBranches model)
+        public async Task<Common.Dto.Response.Branch.GetBranches> GetBranches(Common.Dto.Request.Branch.GetBranches req)
         {
             try
             {
-                var items = await _uow.Branche.GetAll(model);
+                var items = await _uow.Branche.GetAll(req);
                 var branches = items.Select(b => new BranchDto
                 {
                     Id = b.Id,

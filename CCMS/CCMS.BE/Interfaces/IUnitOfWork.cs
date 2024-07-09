@@ -7,7 +7,7 @@ namespace CCMS.BE.Interfaces;
 public interface IUnitOfWork : IDisposable
 {
     IVerifyCodeRepository VerifyCodes {  get; }
-    IOrderRepository OrderRepository { get; }
+    IOrderRepository Order { get; }
     IBaseRepository<MenuItemOrder> MenuItemOrder {  get; }
     IBaseRepository<Update> Update { get; }
     IBaseRepository<UpdateOrder> UpdateOrder { get; }

@@ -13,7 +13,7 @@ public class GetToken : BaseResponse
     public DateTime RefreshTokenExpiration { get; set; }
     public List<string>? Roles { get; set; }
     public string SystemType { get; set; }
-    public Guid BranchId { get; set; }
+    public Guid? BranchId { get; set; }
 
     public byte[]? Picture { get; set; }
     public string? Name { get; set; }
