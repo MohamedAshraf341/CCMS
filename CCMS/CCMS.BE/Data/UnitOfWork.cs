@@ -20,7 +20,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IBrancheRepository Branche { get; private set; }
     public IBranchPhoneRepository BranchPhone { get; private set; }
-
+    public ICustomerRepository Customer { get; private set; }
+    public IMenuItemRepository MenuItem { get; private set; }
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
@@ -32,7 +33,8 @@ public class UnitOfWork : IUnitOfWork
         Restaurant = new RestaurantRepository(context);
         Branche=new BrancheRepository(context);
         BranchPhone = new BranchPhoneRepository(context);
-
+        Customer = new CustomerRepository(context);
+        MenuItem = new MenuItemRepository(context);
     }
 
 

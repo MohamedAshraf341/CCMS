@@ -9,11 +9,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dto\Request\Client\" />
-    <Folder Include="Dto\Request\MenuItem\" />
-    <Folder Include="Dto\Response\Client\" />
-    <Folder Include="Dto\Response\MenuItem\" />
-  </ItemGroup>
-
 </Project>

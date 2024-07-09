@@ -15,6 +15,8 @@ namespace CCMS.BE.Data.Models
         public string Phone { get; set; }
         [Required]
         public string Address { get; set; }
+        public Guid? BranchId { get; set; }
+        public Branch? Branch { get; set; }
         public ICollection<Order> Orders { get; set; }
 
     }

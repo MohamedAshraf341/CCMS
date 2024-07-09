@@ -14,6 +14,8 @@ public interface IUnitOfWork : IDisposable
     IRestaurantRepository Restaurant { get; }
     IBrancheRepository Branche { get; }
     IBranchPhoneRepository BranchPhone { get; }
+    ICustomerRepository Customer { get; }
+    IMenuItemRepository MenuItem { get; }
     Task<int> CompleteAsync();
 
 }

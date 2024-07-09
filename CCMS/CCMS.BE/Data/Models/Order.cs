@@ -15,8 +15,7 @@ namespace CCMS.BE.Data.Models
         [Required]
         public Guid CustomerId { get; set; }
         public Customer? customer { get; set; }
-        [Required]
-        public Guid BranchId { get; set; }
+        public Guid? BranchId { get; set; }
         public Branch? Branch { get; set; }
         public string? CreatedBy { get; set; }
         public ApplicationUser? CreatedUser { get; set; }

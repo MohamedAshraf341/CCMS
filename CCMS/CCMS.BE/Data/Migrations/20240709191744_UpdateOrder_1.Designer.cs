@@ -4,6 +4,7 @@ using CCMS.BE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCMS.BE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240709191744_UpdateOrder_1")]
+    partial class UpdateOrder_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,9 +188,6 @@ namespace CCMS.BE.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("BranchId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -199,8 +198,6 @@ namespace CCMS.BE.Data.Migrations
                         .HasColumnType("nvarchar(11)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("Customers");
                 });
@@ -576,15 +573,6 @@ namespace CCMS.BE.Data.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CCMS.BE.Data.Models.Customer", b =>
-                {
-                    b.HasOne("CCMS.BE.Data.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId");
-
-                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("CCMS.BE.Data.Models.MenuItem", b =>

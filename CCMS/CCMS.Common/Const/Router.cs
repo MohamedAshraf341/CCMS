@@ -50,16 +50,28 @@
         public static class MenuItem
         {
             public const string Prefix = "MenuItem";
+            public const string GetMenuItems = Prefix + "/GetMenuItems";
+            public const string AddMenuItem = Prefix + "/AddMenuItem";
+            public const string EditMenuItem = Prefix + "/EditMenuItem";
+            public const string DeleteMenuItem = Prefix + "/DeleteMenuItem";
 
         }
         public static class Order
         {
             public const string Prefix = "Order";
+            public const string GetOrders = Prefix + "/GetOrders";
+            public const string AddOrder = Prefix + "/AddOrder";
+            public const string EditOrder = Prefix + "/EditOrder";
+            public const string DeleteOrder = Prefix + "/DeleteOrder";
 
         }
         public static class Client
         {
             public const string Prefix = "Client";
+            public const string GetClients = Prefix + "/GetClients";
+            public const string AddClient = Prefix + "/AddClient";
+            public const string EditClient = Prefix + "/EditClient";
+            public const string DeleteClient = Prefix + "/DeleteClient";
 
         }
     }

@@ -15,6 +15,7 @@ namespace CCMS.BE.Services
             services.AddScoped<OrderService>();
             services.AddScoped<PhoneService>();
             services.AddScoped<ClientService>();
+            services.AddScoped<MenuItemService>();
         }
     }
 }

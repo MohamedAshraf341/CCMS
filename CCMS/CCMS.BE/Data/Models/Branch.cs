@@ -20,6 +20,7 @@ namespace CCMS.BE.Data.Models
         public ICollection<BranchPhone>? BranchPhones { get; set; }
         public ICollection<MenuItem>? MenuItems { get; set; }
         public ICollection<BranchUser>? BranchUsers { get; set; }
+        public ICollection<Order>? Orders { get; set; }
 
 
     }
