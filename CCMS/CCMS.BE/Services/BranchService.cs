@@ -13,10 +13,13 @@ namespace CCMS.BE.Services
 {
     public class BranchService
     {
+        private readonly IManagementUsersService _managementUsersService;
+
         private readonly IUnitOfWork _uow;
-        public BranchService(IUnitOfWork uow)
+        public BranchService(IUnitOfWork uow, IManagementUsersService managementUsersService)
         {
             _uow = uow;
+            _managementUsersService = managementUsersService;
         }
         public async Task<Common.Dto.Response.Branch.GetBranches> GetBranches(Common.Dto.Request.Branch.GetBranches req)
         {

@@ -10,7 +10,7 @@ namespace CCMS.FE.UI.Pages.Branch
 {
     public partial class Branches
     {
-        [Parameter] public string Model { get; set; }
+        [Parameter] public Guid? RestaurantId { get; set; }
         [Inject] NotficationServices Notfication { get; set; }
         [Inject] NavigationManager NavigationManager { get; set; }
         [Inject] ApiClient ApiClient { get; set; }
@@ -23,7 +23,6 @@ namespace CCMS.FE.UI.Pages.Branch
         private bool bordered = false;
         private string searchString1 = "";
         private IEnumerable<BranchDto> Elements = new List<BranchDto>();
-        private RestaurantDto Restaurant=new RestaurantDto();
         private async Task LoadItems()
         {
             Loading = true;
@@ -32,11 +31,10 @@ namespace CCMS.FE.UI.Pages.Branch
             {
                 try
                 {
-                    Restaurant = System.Text.Json.JsonSerializer.Deserialize<RestaurantDto>(Model);
                     var user = authService.GetUser();
                     var req = new Common.Dto.Request.Branch.GetBranches
                     {
-                        RestaurantId = Restaurant.Id,
+                        RestaurantId = RestaurantId,
                         UserId = user.SystemType == Common.Const.SystemType.Restaurant ? Guid.Parse(user.Id) : null,
                     };
                     var res = await ApiClient.Branche.GetBranches(req);
@@ -64,8 +62,45 @@ namespace CCMS.FE.UI.Pages.Branch
         }
         private void NavigateToAddBranch()
         {
-            
-            NavigationManager.NavigateTo($"/AddBranch?Branch={Restaurant.Id}");
+            if(RestaurantId.HasValue)
+                NavigationManager.NavigateTo($"/AddBranch?RestaurantId={RestaurantId}");
+            else
+                NavigationManager.NavigateTo($"/AddBranch");
+
+        }
+
+        private MarkupString GetHighlightedText(string text)
+        {
+            if (string.IsNullOrEmpty(searchString1))
+                return new MarkupString(text);
+
+            var index = text.IndexOf(searchString1, StringComparison.OrdinalIgnoreCase);
+            if (index == -1)
+                return new MarkupString(text);
+
+            var highlighted = text.Substring(0, index) +
+                              $"<span style='background-color: yellow'>{text.Substring(index, searchString1.Length)}</span>" +
+                              text.Substring(index + searchString1.Length);
+
+            return new MarkupString(highlighted);
+        }
+        private bool FilterFunc1(BranchDto element) => FilterFunc(element, searchString1);
+
+        private bool FilterFunc(BranchDto element, string searchString)
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Reasturant.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (string.Join(" , ", element.Moderators).Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (GetFormattedAddress(element.Area, element.City, element.Government).Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            return false;
+        }
+        private string GetFormattedAddress( string Area, string City, string Government)
+        {
+            return $"{Area}, {City}, {Government}";
         }
     }
 }

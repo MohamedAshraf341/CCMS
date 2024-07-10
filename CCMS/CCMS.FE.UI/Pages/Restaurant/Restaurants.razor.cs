@@ -146,8 +146,7 @@ namespace CCMS.FE.UI.Pages.Restaurant
         }
         private void NavigateToBranchPage(RestaurantDto item)
         {
-            var serializedModel = System.Text.Json.JsonSerializer.Serialize(item);
-            NavigationManager.NavigateTo($"/Branches?model={Uri.EscapeDataString(serializedModel)}");
+            NavigationManager.NavigateTo($"/Branches?RestaurantId={item.Id}");
         }
     }
 }

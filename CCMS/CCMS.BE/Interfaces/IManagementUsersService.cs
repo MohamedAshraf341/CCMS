@@ -24,4 +24,5 @@ public interface IManagementUsersService
     Task<BaseResponse> UpdateUserAsync(UpdateUser model);
     Task<BaseResponse> ResetPasswordAsync(ResetPassword model);
     Task<BaseResponse> RevokeTokenAsync(string token);
+    Task<bool> UserIsAdmin(string userId);
 }

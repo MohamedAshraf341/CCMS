@@ -18,7 +18,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
-            <MudTd DataLabel="Branches Count"><MudLink Color="Color.Dark" Underline="Underline.None" OnClick="@( () =>NavigateToBranchPage(context))">@GetHighlightedText(context.BranchCount.ToString())</MudLink></MudTd>
+            <MudTd DataLabel="Branches Count"><MudLink Color="Color.Dark" Underline="Underline.None" @onclick="@( () =>NavigateToBranchPage(context))">@GetHighlightedText(context.BranchCount.ToString())</MudLink></MudTd>
             <MudTd DataLabel="">
                 <MudFab Color="Color.Secondary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Edit" Title="Delete Resturant" OnClick="(() => EditResturant(context))" />
                 <MudFab Color="Color.Error" Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete" Title="Delete Resturant" OnClick="(() => DeleteResturant(context))" />

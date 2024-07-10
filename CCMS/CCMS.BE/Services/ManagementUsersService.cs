@@ -511,4 +511,14 @@ public class ManagementUsersService : IManagementUsersService
             return new BaseResponse { Success = false,Message=ex.Message };
         }
     }
+
+    public async Task<bool> UserIsAdmin(string userId)
+    {
+        var user=await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+        var roles = await _userManager.GetRolesAsync(user);
+        if(roles == null) return false;
+        if(roles.Contains(Common.Const.Roles.Admin.Name)) return true;
+        return false;
+    }
 }
