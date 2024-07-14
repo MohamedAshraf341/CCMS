@@ -98,9 +98,6 @@ namespace CCMS.FE.UI.Pages.Branch
                 return true;
             return false;
         }
-        private string GetFormattedAddress( string Area, string City, string Government)
-        {
-            return $"{Area}, {City}, {Government}";
-        }
+
     }
 }
