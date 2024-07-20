@@ -3,25 +3,46 @@
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
+
 <MudContainer>
-    <MudTable Loading="Loading" Items="@Elements" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<RestaurantDto,bool>(FilterFunc1)">
-        <ToolBarContent>
-            @*             <MudText Typo="Typo.h6">Periodic Elements</MudText>
-            *@            <MudSpacer />
-            <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mr-2"></MudTextField>
-            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Add" Title="Add new Resturant" OnClick="AddResturant" />
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Branches Count</MudTh>
-            <MudTh></MudTh>
+    <MudGrid Justify="Justify.FlexEnd" Class="mb-4 pa-4">
+        <MudTextField @bind-Value="searchString1"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Variant="Variant.Filled"
+                      Class="mr-4 ">
+        </MudTextField>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="AddResturant" >
+        </MudButton>
+
+    </MudGrid>
+    <MudTable Filter="new Func<RestaurantDto,bool>(FilterFunc1)" Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Striped="true" Bordered="true" CustomHeader="true" Loading="@Loading" LoadingProgressColor="Color.Info" Class="mb-10">
+
+         <HeaderContent >
+            <MudTHeadRow Style="background-color:#1E88E5">
+                <MudTh><b>Name</b></MudTh>
+                <MudTh><b>Branches Count</b></MudTh>
+                <MudTh></MudTh>
+            </MudTHeadRow>           
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
-            <MudTd DataLabel="Branches Count"><MudLink Color="Color.Dark" Underline="Underline.None" @onclick="@( () =>NavigateToBranchPage(context))">@GetHighlightedText(context.BranchCount.ToString())</MudLink></MudTd>
+            <MudTd DataLabel="Branches Count">
+                <MudLink Color="Color.Dark" Underline="Underline.None"
+                         @onclick="@( () =>NavigateToBranchPage(context))"
+                         style="cursor: pointer;">
+                    @GetHighlightedText(context.BranchCount.ToString())
+                </MudLink>
+            </MudTd>
             <MudTd DataLabel="">
-                <MudFab Color="Color.Secondary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Edit" Title="Delete Resturant" OnClick="(() => EditResturant(context))" />
-                <MudFab Color="Color.Error" Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete" Title="Delete Resturant" OnClick="(() => DeleteResturant(context))" />
+
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                         AriaLabel="Actions" >
+                    <MudMenuItem OnClick="(() => EditResturant(context))"><MudIcon  Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"></MudIcon> Edit</MudMenuItem>
+                    <MudMenuItem OnClick="(() => DeleteResturant(context))"><MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIcon>Delete</MudMenuItem>
+                </MudMenu>
             </MudTd>
         </RowTemplate>
         <PagerContent>

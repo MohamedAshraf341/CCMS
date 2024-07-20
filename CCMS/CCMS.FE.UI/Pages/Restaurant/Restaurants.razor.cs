@@ -20,10 +20,7 @@ namespace CCMS.FE.UI.Pages.Restaurant
         [Inject] AuthenticationService authService { get; set; }
         [Inject] IDialogService DialogService { get; set; }
         private bool Loading = false;
-        private bool dense = true;
-        private bool hover = false;
-        private bool striped = true;
-        private bool bordered = false;
+
         private string searchString1 = "";
         private IEnumerable<RestaurantDto> Elements = new List<RestaurantDto>();
         private async Task LoadItems()
@@ -129,7 +126,7 @@ namespace CCMS.FE.UI.Pages.Restaurant
         }
         private async Task DeleteResturant(RestaurantDto item)
         {
-            var result = await DialogService.ShowMessageBox("Delete User", $"Do you want delete {item.Name}?", yesText: "yes", cancelText: "No");
+            var result = await DialogService.ShowMessageBox("Delete Restaurant", $"Do you want delete {item.Name}?", yesText: "yes", cancelText: "No");
             if (result == true)
             {
                 var res = await ApiClient.Restaurant.DeleteRestaurant(item.Id);

@@ -1,7 +1,49 @@
 ﻿@page "/Clients"
 
+@using CCMS.Common.Dto
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-<h3>Clients</h3>
+<MudContainer>
+    <MudGrid Justify="Justify.FlexEnd" Class="mb-4 pa-4">
+        <MudTextField @bind-Value="searchString1"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Variant="Variant.Filled"
+                      Class="mr-4 ">
+        </MudTextField>
+
+
+    </MudGrid>
+    <MudTable Filter="new Func<CustomerDto,bool>(FilterFunc1)" Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Striped="true" Bordered="true" CustomHeader="true" Loading="@Loading" LoadingProgressColor="Color.Info" Class="mb-10">
+        <HeaderContent>
+            <MudTHeadRow Style="background-color:#1E88E5">
+                <MudTh><b>Name</b></MudTh>
+                <MudTh><b>Phone</b></MudTh>
+                <MudTh><b>Address</b></MudTh>
+                <MudTh><b>CountOrder</b></MudTh>
+                <MudTh></MudTh>
+            </MudTHeadRow>
+
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
+            <MudTd DataLabel="Phone">@GetHighlightedText(context.Phone)</MudTd>
+            <MudTd DataLabel="Address">@GetHighlightedText(context.Address)</MudTd>
+            <MudTd DataLabel="CountOrder">@GetHighlightedText(context.CountOrder.ToString())</MudTd>
+
+            <MudTd DataLabel="">
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                         AriaLabel="Actions">
+
+                </MudMenu>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
 
 

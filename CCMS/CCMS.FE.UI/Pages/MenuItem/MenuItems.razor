@@ -1,7 +1,61 @@
 ﻿@page "/MenuItems"
 
+@using CCMS.Common.Dto
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-<h3>MenuItems</h3>
+<MudContainer>
+    <MudGrid Justify="Justify.FlexEnd" Class="mb-4 pa-4">
+        <MudTextField @bind-Value="searchString1"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Variant="Variant.Filled"
+                      Class="mr-4 ">
+        </MudTextField>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" >
+        </MudButton>
+
+    </MudGrid>
+    <MudTable Filter="new Func<MenuItemDto,bool>(FilterFunc1)" Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Striped="true" Bordered="true" CustomHeader="true" Loading="@Loading" LoadingProgressColor="Color.Info" Class="mb-10">
+        <HeaderContent>
+            <MudTHeadRow Style="background-color:#1E88E5">
+                <MudTh><b>Picture</b></MudTh>
+                <MudTh><b>Name</b></MudTh>
+                <MudTh><b>Branch Name</b></MudTh>
+                <MudTh><b>Price</b></MudTh>
+                <MudTh><b>Count Orders</b></MudTh>
+                <MudTh></MudTh>
+            </MudTHeadRow>
+
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Picture">
+                @if (context.Picture != null && context.Picture.Length > 0)
+                {
+                    <MudAvatar Image="@($"data:image/png;base64,{Convert.ToBase64String(context.Picture)}")"></MudAvatar>
+                }
+                else
+                {
+                    <MudAvatar Image=""></MudAvatar>
+                }
+            </MudTd>
+            <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
+            <MudTd DataLabel="Branch Name">@GetHighlightedText(context.BranchName)</MudTd>
+            <MudTd DataLabel="Price">@GetHighlightedText(context.Price.ToString())</MudTd>
+            <MudTd DataLabel="Count Orders">@GetHighlightedText(context.CountOrders.ToString())</MudTd>
+            <MudTd DataLabel="">
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                         AriaLabel="Actions">
+                    <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"></MudIcon> Edit</MudMenuItem>
+                    <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIcon>Delete</MudMenuItem>
+                </MudMenu>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
 
 

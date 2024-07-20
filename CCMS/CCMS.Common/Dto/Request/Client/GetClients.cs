@@ -4,8 +4,6 @@ namespace CCMS.Common.Dto.Request.Client
 {
     public class GetClients
     {
-        public Guid? BranchId { get; set; }
-        
-
+        public Guid? BranchId { get; set; }        
     }
 }

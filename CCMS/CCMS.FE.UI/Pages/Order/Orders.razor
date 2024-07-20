@@ -1,7 +1,83 @@
 ﻿@page "/Orders"
 
+@using CCMS.Common.Dto
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-<h3>Orders</h3>
+<MudContainer>
+    <MudGrid Justify="Justify.FlexEnd" Class="mb-4 pa-4">
+        <MudTextField @bind-Value="searchString1"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Variant="Variant.Filled"
+                      Class="mr-4 ">
+        </MudTextField>
+        @if (User.SystemType == Common.Const.SystemType.Restaurant || authService.UserHasOneOfRole(Common.Const.Roles.User.Name))
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            </MudButton>
+        }
+        
+
+    </MudGrid>
+    <MudTable Filter="new Func<OrderDto,bool>(FilterFunc1)" Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Striped="true" Bordered="true" CustomHeader="true" Loading="@Loading" LoadingProgressColor="Color.Info" Class="mb-10">
+        <HeaderContent>
+            <MudTHeadRow Style="background-color:#1E88E5">
+                <MudTh><b>Status</b></MudTh>
+                <MudTh><b>Restaurant</b></MudTh>
+                <MudTh><b>Customer Name</b></MudTh>
+                <MudTh><b>Customer Phone</b></MudTh>
+                <MudTh><b>Customer Address</b></MudTh>
+                <MudTh><b>Creation Date</b></MudTh>
+                <MudTh><b>Created By</b></MudTh>
+                <MudTh><b>Received By</b></MudTh>
+                <MudTh></MudTh>
+            </MudTHeadRow>
+
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Status">
+                @if (context.Status==Common.Const.Status.Hold)
+                {
+                    <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.Pending"></MudIcon>
+                }
+                else if (context.Status == Common.Const.Status.Progress)
+                {
+                    <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTimeFilled"></MudIcon>
+                }
+                else if (context.Status == Common.Const.Status.Done)
+                {
+                    <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle"></MudIcon>
+                }
+            </MudTd>
+            @if(User.SystemType==Common.Const.SystemType.System )
+            {
+                <MudTd DataLabel="Restaurant">@GetHighlightedText(context.Restaurant)</MudTd>
+            }
+            <MudTd DataLabel="Customer Name">@GetHighlightedText(context.CustomerName)</MudTd>
+            <MudTd DataLabel="Customer Phone">@GetHighlightedText(context.CustomerPhone)</MudTd>
+            <MudTd DataLabel="Customer Address">@GetHighlightedText(context.CustomerAddress)</MudTd>
+            <MudTd DataLabel="Creation Date">@GetHighlightedText(FormatTime(context.CreationDate))</MudTd>
+            @if (User.SystemType == Common.Const.SystemType.System && authService.UserHasOneOfRole(Common.Const.Roles.Admin.Name, Common.Const.Roles.SuperAdmin.Name))
+            {
+                <MudTd DataLabel="Created By">@GetHighlightedText(context.CreatedName)</MudTd>
+            }
+            @if (User.SystemType == Common.Const.SystemType.System || authService.UserHasOneOfRole(Common.Const.Roles.Admin.Name))
+            {
+                <MudTd DataLabel="Received By">@GetHighlightedText(context.ReceivedName)</MudTd>
+            }
+            <MudTd DataLabel="">
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                         AriaLabel="Actions">
+
+                </MudMenu>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
 
 

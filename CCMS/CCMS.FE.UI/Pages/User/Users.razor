@@ -4,28 +4,36 @@
 
 @attribute [Authorize]
 <MudContainer>
+    <MudGrid Justify="Justify.FlexEnd" Class="mb-4 pa-4">
+        <MudTextField @bind-Value="searchString1"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Variant="Variant.Filled"
+                      Class="mr-4 ">
+        </MudTextField>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="AddUser">
+        </MudButton>
 
-    <MudTable Loading="Loading" Items="@Elements" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<UsersDto,bool>(FilterFunc1)">
-        <ToolBarContent>
-@*             <MudText Typo="Typo.h6">Periodic Elements</MudText>
- *@            <MudSpacer />
-            <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mr-2"></MudTextField>
-            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Add user" Title="Add new user" OnClick="AddUser" />
+    </MudGrid>
+    <MudTable Filter="new Func<UsersDto,bool>(FilterFunc1)" Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Striped="true" Bordered="true" CustomHeader="true" Loading="@Loading" LoadingProgressColor="Color.Info" Class="mb-10">
 
-        </ToolBarContent>
         <HeaderContent>
-            <MudTh>Picture</MudTh>
-            <MudTh>Name</MudTh>
-            <MudTh>Email</MudTh>
-            <MudTh>Gender</MudTh>
-            <MudTh>Age</MudTh>
-            @if (SystemType == Common.Const.SystemType.Restaurant)
-            {
-                <MudTh>Restaurant</MudTh>
-                <MudTh>Branch</MudTh>
-            }
-            <MudTh>Roles</MudTh>
-            <MudTh></MudTh>
+            <MudTHeadRow Style="background-color:#1E88E5">
+                <MudTh><b>Picture</b></MudTh>
+                <MudTh><b>Name</b></MudTh>
+                <MudTh><b>Email</b></MudTh>
+                <MudTh><b>Gender</b></MudTh>
+                <MudTh><b>Age</b></MudTh>
+                @if (SystemType == Common.Const.SystemType.System)
+                {
+                    <MudTh><b>Restaurant</b></MudTh>
+                    <MudTh><b>Branch</b></MudTh>
+                }
+                <MudTh>Roles</MudTh>
+                <MudTh></MudTh>
+            </MudTHeadRow>
         </HeaderContent>
         <RowTemplate>
 

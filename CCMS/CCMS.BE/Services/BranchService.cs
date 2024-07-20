@@ -29,17 +29,14 @@ namespace CCMS.BE.Services
                 var branches = items.Select(b => new BranchDto
                 {
                     Id = b.Id,
-                    Area = b.Area,
-                    City = b.City,
-                    Government = b.Government,
-                    Reasturant = b.Restaurant != null ? b.Restaurant.Name : string.Empty,
+                    Address = GetFormattedAddress(b.Area,b.City,b.Government),
+                    Restaurant = b.Restaurant != null ? b.Restaurant.Name : string.Empty,
                     phoneNumbers = b.BranchPhones.Select(p => new PhoneNumberDto
                     {
                         Id = p.Id,
                         PhoneNumber = p.Phone,
                         BranchId = b.Id
                     }).ToList(),
-                    Moderators=b.BranchUsers.Select(x => x.User.Name).ToList(),
                 }).ToList();
 
                 return new Common.Dto.Response.Branch.GetBranches { Success = true, Message = "List of Branches",Branches=branches};
@@ -49,6 +46,10 @@ namespace CCMS.BE.Services
                 return new Common.Dto.Response.Branch.GetBranches { Success = false, Message = ex.Message };
             }
 
+        }
+        private string GetFormattedAddress( string Area, string City, string Government)
+        {
+            return $"{Area}, {City}, {Government}";
         }
         public async Task<BaseResponse> AddBranche(AddOrEditBranche model)
         {

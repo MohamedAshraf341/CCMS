@@ -10,17 +10,13 @@ namespace CCMS.FE.UI.Pages.Branch
 {
     public partial class Branches
     {
-        [Parameter] public Guid? RestaurantId { get; set; }
+        private Guid? RestaurantId { get; set; }
         [Inject] NotficationServices Notfication { get; set; }
         [Inject] NavigationManager NavigationManager { get; set; }
         [Inject] ApiClient ApiClient { get; set; }
         [Inject] AuthenticationService authService { get; set; }
         [Inject] IDialogService DialogService { get; set; }
         private bool Loading = false;
-        private bool dense = true;
-        private bool hover = false;
-        private bool striped = true;
-        private bool bordered = false;
         private string searchString1 = "";
         private IEnumerable<BranchDto> Elements = new List<BranchDto>();
         private async Task LoadItems()
@@ -58,6 +54,11 @@ namespace CCMS.FE.UI.Pages.Branch
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("RestaurantId", out var restaurantId))
+            {
+                RestaurantId = Guid.Parse(restaurantId);
+            }
             await LoadItems();
         }
         private void NavigateToAddBranch()
@@ -90,11 +91,9 @@ namespace CCMS.FE.UI.Pages.Branch
         {
             if (string.IsNullOrWhiteSpace(searchString))
                 return true;
-            if (element.Reasturant.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            if (element.Restaurant.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
-            if (string.Join(" , ", element.Moderators).Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                return true;
-            if (GetFormattedAddress(element.Area, element.City, element.Government).Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            if (element.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
             return false;
         }
