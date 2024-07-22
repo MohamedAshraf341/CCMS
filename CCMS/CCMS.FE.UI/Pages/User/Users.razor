@@ -24,17 +24,16 @@
                 <MudTh><b>Picture</b></MudTh>
                 <MudTh><b>Name</b></MudTh>
                 <MudTh><b>Email</b></MudTh>
-                <MudTh><b>Gender</b></MudTh>
-                <MudTh><b>Age</b></MudTh>
-                @if (SystemType == Common.Const.SystemType.System)
+                @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
                 {
-                    <MudTh><b>Restaurant</b></MudTh>
-                    <MudTh><b>Branch</b></MudTh>
+                   @*  <MudTh><b>Restaurant</b></MudTh>
+                    <MudTh><b>Branch</b></MudTh> *@
+                    <MudTh><b>System Type</b></MudTh>
                 }
-                <MudTh>Roles</MudTh>
                 <MudTh></MudTh>
             </MudTHeadRow>
         </HeaderContent>
+
         <RowTemplate>
 
             <MudTd DataLabel="Picture">@if (context.Picture != null && context.Picture.Length > 0)
@@ -49,25 +48,20 @@
 
             <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
             <MudTd DataLabel="Email">@GetHighlightedText(context.Email)</MudTd>
-            <MudTd DataLabel="Gender">@GetHighlightedText(context.Gender)</MudTd>
-            <MudTd DataLabel="Age">
-                @if(context.DateOfBirth.HasValue)
-                {
-                    GetHighlightedText(CalculateAge(context.DateOfBirth.Value));
-                }
 
-            </MudTd>
-            <MudTd DataLabel="Roles">@GetHighlightedText(string.Join(" , ", context.Roles))</MudTd>
-            @if(SystemType==Common.Const.SystemType.Restaurant)
+            @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
             {
-                <MudTd DataLabel="Restaurant">@GetHighlightedText(context.Restaurant)</MudTd>
-                <MudTd DataLabel="Branch">@GetHighlightedText(GetFormattedAddress(context.Area, context.City, context.Government))</MudTd>
+@*                 <MudTd DataLabel="Restaurant">@GetHighlightedText(context.Restaurant)</MudTd>
+                <MudTd DataLabel="Branch">@GetHighlightedText(GetFormattedAddress(context.Area, context.City, context.Government))</MudTd> *@
+                <MudTd DataLabel="System Type">@GetHighlightedText(context.SystemType)</MudTd>
             }
 
 
             <MudTd DataLabel="">
-                <MudFab Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"  Title="Delete user" OnClick="(() => DeleteUser(context))" />
-
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                         AriaLabel="Actions">
+                    <MudMenuItem OnClick="(() => DeleteUser(context))"><MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIcon>Delete</MudMenuItem>
+                </MudMenu>
             </MudTd>
         </RowTemplate>
         <PagerContent>

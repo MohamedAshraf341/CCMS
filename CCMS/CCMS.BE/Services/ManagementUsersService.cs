@@ -1,6 +1,7 @@
 ﻿using CCMS.BE.Data.Models;
 using CCMS.BE.Interfaces;
 using CCMS.BE.Settings;
+using CCMS.Common.Const;
 using CCMS.Common.Dto;
 using CCMS.Common.Dto.Request.Auth;
 using CCMS.Common.Dto.Request.User;
@@ -62,7 +63,8 @@ public class ManagementUsersService : IManagementUsersService
             {
                 Email = model.Email,
                 Name = model.Name,
-                UserName=model.Email
+                UserName=model.Email,
+                SystemType=model.SystemType
             };
             var passwordUser = PasswordGenerator.GeneratePassword();
             var result = await _userManager.CreateAsync(user, passwordUser);
@@ -85,13 +87,13 @@ public class ManagementUsersService : IManagementUsersService
                 Password= passwordUser,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
-            var confirmationToke = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodeToken = Encoding.UTF8.GetBytes(confirmationToke);
-            var newToken = WebEncoders.Base64UrlEncode(encodeToken);
-            var requestScheme = _httpContextAccessor.HttpContext.Request.Scheme;
-            var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext());
+            //var confirmationToke = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var encodeToken = Encoding.UTF8.GetBytes(confirmationToke);
+            //var newToken = WebEncoders.Base64UrlEncode(encodeToken);
+            //var requestScheme = _httpContextAccessor.HttpContext.Request.Scheme;
+            //var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext());
 
-            var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { user.Id, newToken }, requestScheme);
+            //var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { user.Id, newToken }, requestScheme);
 
             var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\WelcomeTemplate.html";
             var str = new StreamReader(filePath);
@@ -102,8 +104,8 @@ public class ManagementUsersService : IManagementUsersService
             mailText = mailText
                 .Replace("[name]", response.Name)
                 .Replace("[email]", response.Email)
-                .Replace("[password]", response.Password)
-                .Replace("[confirmationLink]", confirmationLink);
+                .Replace("[password]", response.Password);
+                //.Replace("[confirmationLink]", confirmationLink);
 
             await _mailingService.SendEmailAsync(response.Email, "Welcome to our Application", mailText);
             return response;
@@ -153,8 +155,8 @@ public class ManagementUsersService : IManagementUsersService
                 return new GetToken {Success=false, Message = "Email is incorrect!" };
             if(!await _userManager.CheckPasswordAsync(user, model.Password))
                 return new GetToken { Success = false, Message = "Password is incorrect!" };
-            if(!await _userManager.IsEmailConfirmedAsync(user))
-                return new GetToken { Success = false, Message = "This Email Invalid." };
+            //if(!await _userManager.IsEmailConfirmedAsync(user))
+            //    return new GetToken { Success = false, Message = "This Email Invalid." };
 
             var roles = await _userManager.GetRolesAsync(user);
             var jwtSecurityToken = await CreateJwtToken(user);
@@ -172,7 +174,7 @@ public class ManagementUsersService : IManagementUsersService
             authModel.SystemType = user.SystemType;
             if(user.SystemType == Common.Const.SystemType.Restaurant)
             {
-                var branch = await _uow.Branche.GetByUserId(Guid.Parse(user.Id));
+                var branch = await _uow.Branche.GetByUserId(user.Id);
                 authModel.BranchId = branch.Id;
             }
             if(user.RefreshTokens.Count()==0)
@@ -379,7 +381,7 @@ public class ManagementUsersService : IManagementUsersService
     {
         try
         {
-            var items = _userManager.Users
+            var items = _userManager.Users.Where(u => u.Id != model.UserId)
     .Include(x => x.BranchUsers)
     .ThenInclude(x => x.Branch)
     .ThenInclude(x => x.Restaurant).AsQueryable();
@@ -389,11 +391,12 @@ public class ManagementUsersService : IManagementUsersService
                 UserId = u.Id,
                 Name = u.Name,
                 Email = u.Email,
-                Roles = _userManager.GetRolesAsync(u).Result.ToList(),
-                Government = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.Government,
-                City = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.City,
-                Area = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.Area,
-                Restaurant = u.BranchUsers.Where(b => b.UserId == Guid.Parse(u.Id)).First().Branch.Restaurant.Name,
+                SystemType=u.SystemType,
+                Picture = u.Picture,
+                Government = u.BranchUsers.Where(b => b.UserId == u.Id).First().Branch.Government,
+                City = u.BranchUsers.Where(b => b.UserId == u.Id).First().Branch.City,
+                Area = u.BranchUsers.Where(b => b.UserId == u.Id).First().Branch.Area,
+                Restaurant = u.BranchUsers.Where(b => b.UserId == u.Id).First().Branch.Restaurant.Name,
 
             }).ToListAsync();
             var res = new Common.Dto.Response.User.GetUsers { Users = users, Success = true, Message = "List of Users" };
@@ -407,8 +410,8 @@ public class ManagementUsersService : IManagementUsersService
     }
     private IQueryable<ApplicationUser> FilterUsers(IQueryable<ApplicationUser> items, Common.Dto.Request.User.GetUsers modelFilter)
     {
-        if (!string.IsNullOrEmpty(modelFilter.UserId))
-            items.Where(u => u.Id != modelFilter.UserId);
+        //if (!string.IsNullOrEmpty(modelFilter.UserId))
+        //    items.Where(u => u.Id != modelFilter.UserId);
         if (!string.IsNullOrEmpty(modelFilter.Role)&& !string.IsNullOrEmpty(modelFilter.UserType))
         {
             if (modelFilter.UserType == Common.Const.SystemType.System)
@@ -418,7 +421,6 @@ public class ManagementUsersService : IManagementUsersService
         }
         if(modelFilter.BranchId.HasValue)
             items.Where(x => x.BranchUsers.Any(x => x.BranchId == modelFilter.BranchId.Value));
-
         return items;
     }
     public async Task<BaseResponse> DeleteUserAsync(string userId)
@@ -448,7 +450,7 @@ public class ManagementUsersService : IManagementUsersService
             Email=res.Email,
             DateOfBirth = res.DateOfBirth,
             Picture = res.Picture,
-            Roles= _userManager.GetRolesAsync(res).Result.ToList() };
+            phone=res.PhoneNumber };
         return user;
     }
     public async Task<BaseResponse> UpdateUserAsync(UpdateUser model)
@@ -461,13 +463,16 @@ public class ManagementUsersService : IManagementUsersService
             user.Name = model.Name;
             user.DateOfBirth= model.DateOfBirth;
             user.Picture = model.Picture;
+            user.PhoneNumber = model.phone;
             var res=await _userManager.UpdateAsync(user);
             if (!res.Succeeded)
                 return new BaseResponse { Success = false, Message = "faild update" };
             return new BaseResponse { Success = true, Message = "updated successfully." };
         }
-        catch (Exception ex)
+        catch (DbUpdateException ex)
         {
+            var innerException = ex.InnerException;
+
             return new BaseResponse { Success = false, Message = ex.Message };
         }
     }

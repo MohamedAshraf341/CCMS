@@ -25,7 +25,7 @@ namespace CCMS.BE.Data.Repositories
                 .AsQueryable();
             if (model.RestaurantId.HasValue)
                 query.Where(x => x.RestaurantId == model.RestaurantId);
-            if(model.UserId.HasValue)
+            if(!string.IsNullOrEmpty(model.UserId))
             {
                 query.Where(x => x.BranchUsers.Any(u => u.UserId == model.UserId));
             }
@@ -42,7 +42,7 @@ namespace CCMS.BE.Data.Repositories
             return item;
         }
 
-        public async Task<Branch> GetByUserId(Guid userId)
+        public async Task<Branch> GetByUserId(string userId)
         {
             var query =  _context.Branches.Include(x => x.BranchUsers).AsQueryable();
             var item= await query.Where(x => x.BranchUsers.Any(u => u.UserId== userId)).FirstOrDefaultAsync();

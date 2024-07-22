@@ -10,5 +10,6 @@ namespace CCMS.Common.Dto.Request.User
         public string Email { get; set; }
         [Required]
         public string Role { get; set; }
+        public string SystemType { get; set; }
     }
 }

@@ -11,6 +11,8 @@ namespace CCMS.Common.Dto
         public string UserId { get; set; }
         public string? Name { get; set; }
         public string Email { get; set; }
+        public string SystemType { get; set; }
+
         public string Restaurant { get; set; }
         public string Government { get; set; }
         public string City { get; set; }

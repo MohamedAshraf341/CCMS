@@ -49,7 +49,14 @@ namespace CCMS.BE.Services
         }
         private string GetFormattedAddress( string Area, string City, string Government)
         {
-            return $"{Area}, {City}, {Government}";
+            string address = string.Empty;
+            if (!string.IsNullOrEmpty(Area))
+                address = Area;
+            if (!string.IsNullOrEmpty(City))
+                address = address + ", " + City;
+            if (!string.IsNullOrEmpty(Government))
+                address = address + ", " + Government;
+            return address;
         }
         public async Task<BaseResponse> AddBranche(AddOrEditBranche model)
         {

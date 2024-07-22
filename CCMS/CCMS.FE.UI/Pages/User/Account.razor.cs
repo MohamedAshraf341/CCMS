@@ -1,50 +1,87 @@
+using CCMS.Common.Dto;
+using CCMS.Common.Dto.Request.User;
+using CCMS.FE.UI.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace CCMS.FE.UI.Pages.User
 {
     public partial class Account
     {
-        public string AvatarImageLink { get; set; } = "https://media-exp1.licdn.com/dms/image/C4D03AQGNO7uV7fRi7Q/profile-displayphoto-shrink_200_200/0/1531753989819?e=1614816000&v=beta&t=t2IEQlTyem3aFB1sQXFHrDGt0yMsNkPu7jDmMPoEbLg";
-        public string AvatarIcon { get; set; }
-        public string AvatarButtonText { get; set; } = "Delete Picture";
+        [Inject] NotficationServices Notfication { get; set; }
+        [Inject] NavigationManager NavigationManager { get; set; }
+        [Inject] ApiClient ApiClient { get; set; }
+        [Inject] AuthenticationService authService { get; set; }
+        [Inject] IDialogService DialogService { get; set; }
+        public IBrowserFile Browser;
+        private async Task UploadFiles(InputFileChangeEventArgs e)
+        {
+            Browser = e.GetMultipleFiles().FirstOrDefault();
+            using MemoryStream ms = new MemoryStream();
+            await Browser.OpenReadStream(long.MaxValue).CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            User.Picture = bytes;
+        }
         public Color AvatarButtonColor { get; set; } = Color.Error;
-        public string FirstName { get; set; } = "Jonny";
-        public string LastName { get; set; } = "Larsson";
-        public string JobTitle { get; set; } = "IT Consultant";
-        public string Email { get; set; } = "Youcanprobably@findout.com";
-        public bool FriendSwitch { get; set; } = true;
-        public bool NotificationEmail_1 { get; set; } = true;
-        public bool NotificationEmail_2 { get; set; }
-        public bool NotificationEmail_3 { get; set; }
-        public bool NotificationEmail_4 { get; set; } = true;
-        public bool NotificationChat_1 { get; set; }
-        public bool NotificationChat_2 { get; set; } = true;
-        public bool NotificationChat_3 { get; set; } = true;
-        public bool NotificationChat_4 { get; set; }
 
+       UsersDto User = new UsersDto();
+
+        private async Task LoadItems()
+        {
+            try
+            {
+                var currentUser = authService.GetUser();
+                if (currentUser != null)
+                {
+                    var item= await ApiClient.Account.GetUserById(currentUser.Id);
+                    if (item != null)
+                    {
+                        User= item;
+                    }
+                    
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error($"Pages/Branche/Branches.LoadItems : : Unhandeled exception : {ex}");
+                await DialogService.ShowMessageBox("Failed", $"Failed to get ?. Please contact hotline.", yesText: "Ok");
+            }
+        }
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            await LoadItems();
+        }
         void DeletePicture()
         {
-            if (!String.IsNullOrEmpty(AvatarImageLink))
-            {
-                AvatarImageLink = null;
-                AvatarIcon = Icons.Material.Outlined.SentimentVeryDissatisfied;
-                AvatarButtonText = "Upload Picture";
-                AvatarButtonColor = Color.Primary;
-            }
-            else
-            {
-                return;
-            }
+            Browser = null;
+            User.Picture = null;
         }
 
-        void SaveChanges(string message, Severity severity)
+        private async Task  SaveChangesGeneral()
         {
-
+            var item=new UpdateUser { UserId=User.UserId,Name=User.Name,DateOfBirth=User.DateOfBirth, Picture = User.Picture,phone=User.phone};
+            var res =await ApiClient.Account.UpdateUser(item);
+            if(res != null)
+            {
+                if(res.Success)
+                    Notfication.ShowMessageSuccess(res.Message);
+                else
+                    Notfication.ShowMessageError(res.Message);
+            }
         }
-
+        private void SaveChangesSecurity()
+        {
+            
+        }
         MudForm form;
         MudTextField<string> pwField1;
 

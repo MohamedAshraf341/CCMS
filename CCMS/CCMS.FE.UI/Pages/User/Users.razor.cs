@@ -19,10 +19,6 @@ namespace CCMS.FE.UI.Pages.User
         [Inject] AuthenticationService authService { get; set; }
         [Inject] IDialogService DialogService { get; set; }
         private bool Loading = false;
-        private bool dense = true;
-        private bool hover = false;
-        private bool striped = true;
-        private bool bordered = false;
         private string searchString1 = "";
         public string SystemType { get; set; }
 
@@ -36,11 +32,11 @@ namespace CCMS.FE.UI.Pages.User
                 try
                 {
                     var user = authService.GetUser();
-                    SystemType = user.SystemType;
+                    SystemType = authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name)?Common.Const.SystemType.System:  user.SystemType;
                     var req = new Common.Dto.Request.User.GetUsers
                     {
                         UserId = user.Id,
-                        UserType = user.SystemType,
+                        UserType = SystemType,
                         Role = user.Roles.Contains(Common.Const.Roles.Admin.Name) ? Common.Const.Roles.Admin.Name : string.Empty,
                         BranchId = user.BranchId,
                     };
@@ -88,6 +84,7 @@ namespace CCMS.FE.UI.Pages.User
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
+                item.SystemType = SystemType;
                 var res = await ApiClient.Admin.AddUser(item);
                 if (res.Success)
                 {
@@ -127,18 +124,22 @@ namespace CCMS.FE.UI.Pages.User
                 return true;
             if (element.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
-            if (element.Gender.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                return true;
-            if (element.DateOfBirth.HasValue)
+            //if (element.Gender.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            //    return true;
+            //if (element.DateOfBirth.HasValue)
+            //{
+            //    if (CalculateAge(element.DateOfBirth.Value).Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            //        return true;
+            //}
+            //if (string.Join(" , ", element.Roles).Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            //    return true;
+            if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
             {
-                if (CalculateAge(element.DateOfBirth.Value).Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            if (string.Join(" , ", element.Roles).Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                return true;
-            if (SystemType == Common.Const.SystemType.Restaurant)
-            {
-                if (GetFormattedAddress(element.Area, element.City, element.Government).Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                //if (GetFormattedAddress(element.Area, element.City, element.Government).Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                //    return true;
+                //if (element.Restaurant.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                //    return true;
+                if (element.SystemType.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                     return true;
             }
 
@@ -146,6 +147,11 @@ namespace CCMS.FE.UI.Pages.User
         }
         private MarkupString GetHighlightedText(string text)
         {
+            // Check if text or searchString1 is null
+            if (text == null)
+            {
+                return new MarkupString(string.Empty);
+            }
             if (string.IsNullOrEmpty(searchString1))
                 return new MarkupString(text);
 
@@ -161,7 +167,14 @@ namespace CCMS.FE.UI.Pages.User
         }
         public string GetFormattedAddress(string Area, string City, string Government)
         {
-            return $"{Area}, {City}, {Government}";
+            string address=string.Empty;
+            if (!string.IsNullOrEmpty(Area))
+                address = Area;
+            if (!string.IsNullOrEmpty(City))
+                address = address + ", " + City;
+            if(!string.IsNullOrEmpty(Government))
+                address= address + ", " + Government;
+            return address;
         }
     }
 }

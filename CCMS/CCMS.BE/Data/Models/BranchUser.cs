@@ -8,7 +8,7 @@ namespace CCMS.BE.Data.Models
         public Guid BranchId { get; set; }
 
         public Branch Branch { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         public ApplicationUser User { get; set; }
     }

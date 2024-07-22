@@ -4,7 +4,14 @@
             <MudAvatar Image="@UserPicture" />
         </CardHeaderAvatar>
         <CardHeaderContent>
-            <MudText Typo="Typo.body2">@User.Name</MudText>
+            @if (User != null)
+            {
+                <MudText Typo="Typo.body2">@User.Name</MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">No user information available</MudText>
+            }
 @*             <MudText Typo="Typo.caption">@User.Name</MudText>
  *@        </CardHeaderContent>
     </MudCardHeader>

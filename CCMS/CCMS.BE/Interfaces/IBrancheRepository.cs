@@ -9,6 +9,6 @@ namespace CCMS.BE.Interfaces
     {
         Task<IEnumerable<Branch>> GetAll(Common.Dto.Request.Branch.GetBranches model);
         Task<Branch> GetByIdWithInclude(Guid id);
-        Task<Branch> GetByUserId(Guid userId);
+        Task<Branch> GetByUserId(string userId);
     }
 }

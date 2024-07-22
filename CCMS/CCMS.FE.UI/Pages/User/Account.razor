@@ -13,19 +13,34 @@
                     </MudCardHeader>
                     <MudCardContent>
                         <div class="d-flex justify-center mb-4">
-                            <MudAvatar Image="@AvatarImageLink" Style="height:100px; width:100px;">
-                                @if (AvatarImageLink == null)
-                                {
-                                    <MudIcon Icon="@AvatarIcon" Size="Size.Large"></MudIcon>
-                                }
-                            </MudAvatar>
+                            @if(User.Picture == null)
+                            {
+                                <MudAvatar Image="" Style="height:100px; width:100px;">
+                                </MudAvatar>
+                               
+                            }
+                            else
+                            {
+                                <MudAvatar Image="@($"data:image/png;base64,{Convert.ToBase64String(User.Picture)}")" Style="height:100px; width:100px;">
+                                </MudAvatar>
+                            }
+
 
                         </div>
-                        <MudText Align="Align.Center">@FirstName @LastName</MudText>
-                        <MudText Align="Align.Center">@JobTitle</MudText>
+                        <MudText Align="Align.Center">@User.Name</MudText>
+                        <MudText Align="Align.Center">@User.Email</MudText>
+
                     </MudCardContent>
                     <MudCardActions Class="d-flex justify-center">
-                        <MudButton OnClick="DeletePicture" Color="@AvatarButtonColor">@AvatarButtonText</MudButton>
+                        @if(User.Picture == null)
+                        {
+                            <InputFile id="fileInput" accept=".jpg,.jpeg,.png,.gif" OnChange="UploadFiles" hidden multiple />
+                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput">Upload Picture</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton OnClick="DeletePicture" HtmlTag="label" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete">Delete Picture</MudButton>
+                        }
                     </MudCardActions>
                 </MudCard>
             </MudItem>
@@ -39,22 +54,20 @@
                     <MudCardContent>
                         <MudGrid>
                             <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Outlined" />
+                                <MudTextField @bind-Value="User.Name" Label="Name" Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="LastName" Label="First Name" Variant="Variant.Outlined" />
+                                <MudTextField @bind-Value="User.phone" Label="phone" Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="JobTitle" Label="Job Title" Variant="Variant.Outlined" />
+                                <MudDatePicker @bind-Date="User.DateOfBirth" Variant="Variant.Outlined" PickerVariant="PickerVariant.Dialog" Label="Date of birth" DateFormat="dd/MM/yyyy" />
                             </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="Email" Label="Email" Variant="Variant.Outlined" InputType="InputType.Email" />
-                            </MudItem>
+
                             
                         </MudGrid>
                     </MudCardContent>
                     <MudCardActions Class="pb-4 pl-4">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" @onclick="@(() => SaveChanges("Profile details saved", Severity.Success))">Save Changes</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChangesGeneral">Save Changes</MudButton>
                     </MudCardActions>
                 </MudCard>
             </MudItem>
@@ -83,7 +96,7 @@
                     </MudGrid>
                 </MudCardContent>
                 <MudCardActions Class="pb-4 pl-4">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" @onclick="@(() => SaveChanges("Current Password is incorrect", Severity.Error))">Change Password</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChangesSecurity">Change Password</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudForm>

@@ -31,7 +31,7 @@ namespace CCMS.FE.UI.Pages.Branch
                     var req = new Common.Dto.Request.Branch.GetBranches
                     {
                         RestaurantId = RestaurantId,
-                        UserId = user.SystemType == Common.Const.SystemType.Restaurant ? Guid.Parse(user.Id) : null,
+                        UserId = user.SystemType == Common.Const.SystemType.Restaurant ? user.Id : null,
                     };
                     var res = await ApiClient.Branche.GetBranches(req);
                     if (res.Success)
@@ -72,6 +72,11 @@ namespace CCMS.FE.UI.Pages.Branch
 
         private MarkupString GetHighlightedText(string text)
         {
+            // Check if text or searchString1 is null
+            if (text == null)
+            {
+                return new MarkupString(string.Empty);
+            }
             if (string.IsNullOrEmpty(searchString1))
                 return new MarkupString(text);
 

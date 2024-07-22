@@ -37,11 +37,16 @@ namespace CCMS.BE
             services.AddEndpointsApiExplorer();
 
             services.Configure<JwtSettings>(Configuration.GetSection("JWT"));
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-            services.Configure<IdentityOptions>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                options.User.AllowedUserNameCharacters = "xxxxxx";
-                });
+                options.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //    options.User.AllowedUserNameCharacters = "xxxxxx";
+            //    });
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"),

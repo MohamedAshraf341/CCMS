@@ -64,6 +64,11 @@ namespace CCMS.FE.UI.Pages.MenuItem
 
         private MarkupString GetHighlightedText(string text)
         {
+            // Check if text or searchString1 is null
+            if (text == null)
+            {
+                return new MarkupString(string.Empty);
+            }
             if (string.IsNullOrEmpty(searchString1))
                 return new MarkupString(text);
 
