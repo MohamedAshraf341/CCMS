@@ -80,6 +80,7 @@ public class ManagementUsersService : IManagementUsersService
 
             var response = new AddUserResponse
             {
+                UserId=user.Id,
                 Success=true,
                 Message= "User added successfully",
                 Email = model.Email,
@@ -483,8 +484,10 @@ public class ManagementUsersService : IManagementUsersService
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
                 return new BaseResponse { Success = false, Message = "user is invalid" };
-            var newPassword =  _userManager.PasswordHasher.HashPassword(user,model.Password);
-            return new BaseResponse { Success = true, Message = "successfully" };
+            if (!await _userManager.CheckPasswordAsync(user, model.CurrentPassword))
+                return new BaseResponse { Success = false, Message = "user is invalid" };
+            var newPassword =  _userManager.PasswordHasher.HashPassword(user,model.NewPassword);
+            return new BaseResponse { Success = true, Message = "successfully Updated" };
         }
         catch (Exception ex)
         {

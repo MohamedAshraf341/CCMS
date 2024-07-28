@@ -72,6 +72,12 @@ namespace CCMS.BE.Controllers
             var res=await _managementUsersService.UpdateUserAsync(model);
             return Ok(res);
         }
+        [HttpPost(Router.Account.ResetPassword)]
+        public async Task<IActionResult> ResetPassword(ResetPassword model)
+        {
+            var res = await _managementUsersService.ResetPasswordAsync(model);
+            return Ok(res);
+        }
         [HttpPost(Router.Account.LogOut )]
         public async Task<IActionResult> LogOut(RefreshToken model)
         {

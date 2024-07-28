@@ -38,5 +38,10 @@ namespace CCMS.FE.UI.Services
             var res = await ApiHttpClient.Put<UpdateUser, BaseResponse>(Router.Account.UpdateUser,model);
             return res;
         }
+        internal async Task<BaseResponse> ResetPassword(ResetPassword model)
+        {
+            var res = await ApiHttpClient.Post<ResetPassword, BaseResponse>(Router.Account.ResetPassword, model);
+            return res;
+        }
     }
 }

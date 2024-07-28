@@ -84,10 +84,10 @@
                 <MudCardContent>
                     <MudGrid>
                         <MudItem xs="12">
-                            <MudTextField T="string" Label="Current Password" Variant="Variant.Outlined" InputType="InputType.Password" />
+                            <MudTextField T="string" @bind-Value="ResetPasswordUser.CurrentPassword" Label="Current Password" Variant="Variant.Outlined" InputType="InputType.Password" />
                         </MudItem>
                         <MudItem xs="12" md="6">
-                            <MudTextField T="string" Label="New Password" Variant="Variant.Outlined" InputType="InputType.Password" @ref="pwField1" Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true" RequiredError="Password is required!" />
+                            <MudTextField T="string" @bind-Value="ResetPasswordUser.NewPassword" Label="New Password" Variant="Variant.Outlined" InputType="InputType.Password" @ref="pwField1" Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true" RequiredError="Password is required!" />
                         </MudItem>
                         <MudItem xs="12" md="6">
                             <MudTextField T="string" Label="Password Confirmation" Variant="Variant.Outlined" InputType="InputType.Password" Validation="@(new Func<string, string>(PasswordMatch))" />

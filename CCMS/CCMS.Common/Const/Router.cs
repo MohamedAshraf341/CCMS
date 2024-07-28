@@ -14,6 +14,7 @@
             public const string GetUserById = Prefix + "/GetUserById";
             public const string UpdateUser = Prefix + "/UpdateUser";
             public const string LogOut = Prefix + "/LogOut";
+            public const string ResetPassword = Prefix + "/ResetPassword";
 
         }
         public static class Admin

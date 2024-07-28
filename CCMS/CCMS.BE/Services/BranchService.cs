@@ -62,15 +62,27 @@ namespace CCMS.BE.Services
         {
             try
             {
+                var AddUser = new Common.Dto.Request.User.AddUser
+                {
+                    Email=model.AdminEmail,
+                    Name=model.AdminName,
+                    Role=Common.Const.Roles.Admin.Name,
+                    SystemType=Common.Const.SystemType.Restaurant,
+                };
+                var user= await _managementUsersService.AddUserAsync(AddUser);
+
                 var item = new Branch
                 {
                     Area = model.Area,
                     City = model.City,
+                    
                     Government = model.Government,
                     RestaurantId = model.RestaurantId,
-                    BranchPhones = model.Phones.Select(p => new BranchPhone { Phone = p }).ToList()
+                    BranchPhones = model.Phones.Select(p => new BranchPhone { Phone = p.PhoneNumber }).ToList()
                 };
-                await _uow.Branche.AddAsync(item);
+                item=await _uow.Branche.AddAsync(item);
+                var branchUser = new BranchUser {BranchId=item.Id,UserId=user.UserId };
+                await _uow.BranchUser.AddAsync(branchUser);
                 var res = await _uow.CompleteAsync();
                 if (res > 0)
                     return new BaseResponse { Success = true, Message = "Branches Added successfully." };
@@ -92,7 +104,7 @@ namespace CCMS.BE.Services
                 item.City = model.City;
                 item.Government = model.Government;
                 item.RestaurantId = model.RestaurantId;
-                item.BranchPhones = model.Phones.Select(p => new BranchPhone { Phone = p }).ToList();
+                item.BranchPhones = model.Phones.Select(p => new BranchPhone { Phone = p.PhoneNumber }).ToList();
                 _uow.Branche.Update(item);
                 var res = await _uow.CompleteAsync();
                 if (res > 0)

@@ -1,4 +1,5 @@
 using CCMS.Common.Dto;
+using CCMS.Common.Dto.Request.Auth;
 using CCMS.Common.Dto.Request.User;
 using CCMS.FE.UI.Services;
 using Microsoft.AspNetCore.Components;
@@ -33,6 +34,7 @@ namespace CCMS.FE.UI.Pages.User
 
        UsersDto User = new UsersDto();
 
+       ResetPassword ResetPasswordUser= new ResetPassword();
         private async Task LoadItems()
         {
             try
@@ -78,9 +80,22 @@ namespace CCMS.FE.UI.Pages.User
                     Notfication.ShowMessageError(res.Message);
             }
         }
-        private void SaveChangesSecurity()
+        private async Task SaveChangesSecurity()
         {
-            
+            var user = authService.GetUser();
+            if (user != null)
+            {
+                ResetPasswordUser.Email = user.Email;
+                var res = await ApiClient.Account.ResetPassword(ResetPasswordUser);
+                if (res.Success)
+                {
+                    Notfication.ShowMessageSuccess(res.Message);
+                }
+                else
+                {
+                    Notfication.ShowMessageError(res.Message);
+                }
+            }
         }
         MudForm form;
         MudTextField<string> pwField1;

@@ -14,6 +14,7 @@ public class UnitOfWork : IUnitOfWork
     public IBaseRepository<MenuItemOrder> MenuItemOrder { get; private set; }
 
     public IBaseRepository<Update> Update { get; private set; }
+    public IBaseRepository<BranchUser> BranchUser { get; private set; }
 
     public IBaseRepository<UpdateOrder> UpdateOrder { get; private set; }
     public IRestaurantRepository Restaurant { get; private set; }
@@ -28,6 +29,8 @@ public class UnitOfWork : IUnitOfWork
         VerifyCodes=new VerifyCodeRepository(_context);
         Order=new OrderRepository(_context);
         MenuItemOrder = new BaseRepository<MenuItemOrder>(context);
+        BranchUser = new BaseRepository<BranchUser>(context);
+
         Update = new BaseRepository<Update>(context);
         UpdateOrder = new BaseRepository<UpdateOrder>(context);
         Restaurant = new RestaurantRepository(context);

@@ -2,6 +2,139 @@
 
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-<h3>AddBranch</h3>
+<MudTabs Elevation="25" Color="Color.Transparent" Rounded="true" PanelClass="mt-6">
+    <MudTabPanel Text="General">
+        <MudGrid>
+            <MudItem xs="12" sm="4" md="3">
+                <MudCard Elevation="25">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText>Branch Image</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <div class="d-flex justify-center mb-4">
+                            @if (Item.Picture == null)
+                            {
+                                <MudAvatar Image="" Style="height:100px; width:100px;">
+                                </MudAvatar>
 
+                            }
+                            else
+                            {
+                                <MudAvatar Image="@($"data:image/png;base64,{Convert.ToBase64String(Item.Picture)}")" Style="height:100px; width:100px;">
+                                </MudAvatar>
+                            }
+
+
+                        </div>
+                    </MudCardContent>
+                    <MudCardActions Class="d-flex justify-center">
+                        @if (Item.Picture == null)
+                        {
+                            <InputFile id="fileInput" accept=".jpg,.jpeg,.png,.gif" OnChange="UploadFiles" hidden multiple />
+                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput">Upload Picture</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton OnClick="DeletePicture" HtmlTag="label" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete">Delete Picture</MudButton>
+                        }
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="8" md="9">
+                <MudCard Elevation="25">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText>Branch Details</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudSelect @bind-Value="Item.RestaurantId" Label="Restaurant" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                                    @foreach (var restaurant in RestaurantElements)
+                                    {
+                                        <MudSelectItem Value="restaurant.Id">@restaurant.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="Item.Government" Label="Government" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="Item.City" Label="City" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="Item.Area" Label="Area" Variant="Variant.Outlined" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudCardContent>
+                    <MudCardActions Class="pb-4 pl-4">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChanges">Save Changes</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Contact">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText>Phone Numbers</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    @foreach (var item in Item.Phones)
+                    {
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="item.PhoneNumber" Label="Phone Number" Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Class="mr-3"
+                                    OnClick="@(()=>AddNewItem(Item.Phones))" />
+                            @if (Item.Phones.Count > 1)
+                            {
+                                <MudFab Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                                        OnClick="@(() => DeleteItem(item,Item.Phones))" />
+                            }
+                        </MudItem>
+                    }                   
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChanges">Save Changes</MudButton>
+            </MudCardActions>
+        </MudCard>
+
+    </MudTabPanel>
+    <MudTabPanel Text="Security">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText>Admin Details</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.AdminName" Label="Admin Name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.AdminEmail" Label="Admin Email" Variant="Variant.Outlined" />
+                    </MudItem>
+
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChanges">Save Changes</MudButton>
+            </MudCardActions>
+        </MudCard>
+
+    </MudTabPanel>
+</MudTabs>
 
