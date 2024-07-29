@@ -14,5 +14,10 @@ namespace CCMS.FE.UI.Services
             var res = await ApiHttpClient.Post<Common.Dto.Request.MenuItem.GetMenuItems, Common.Dto.Response.MenuItem.GetMenuItems>(Router.MenuItem.GetMenuItems, model);
             return res;
         }
+        internal async Task<Common.Dto.Response.BaseResponse> AddMenuItem(Common.Dto.Request.MenuItem.AddOrEditMenuItem model)
+        {
+            var res = await ApiHttpClient.Post<Common.Dto.Request.MenuItem.AddOrEditMenuItem, Common.Dto.Response.BaseResponse>(Router.MenuItem.AddMenuItem, model);
+            return res;
+        }
     }
 }

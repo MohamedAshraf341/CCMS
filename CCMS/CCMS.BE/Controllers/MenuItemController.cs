@@ -22,5 +22,11 @@ namespace CCMS.BE.Controllers
             var items = await _menuItemService.GetMenuItems(model);
             return Ok(items);
         }
+        [HttpPost(Router.MenuItem.AddMenuItem)]
+        public async Task<IActionResult> AddMenuItem(Common.Dto.Request.MenuItem.AddOrEditMenuItem model)
+        {
+            var items = await _menuItemService.Add(model);
+            return Ok(items);
+        }
     }
 }

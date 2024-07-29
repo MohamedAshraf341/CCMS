@@ -13,7 +13,7 @@
                       Variant="Variant.Filled"
                       Class="mr-4 ">
         </MudTextField>
-        @if (User.SystemType == Common.Const.SystemType.Restaurant || authService.UserHasOneOfRole(Common.Const.Roles.User.Name))
+        @if (User.SystemType == Common.Const.SystemType.System || authService.UserHasOneOfRole(Common.Const.Roles.User.Name, Common.Const.Roles.SuperAdmin.Name))
         {
             <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
             </MudButton>

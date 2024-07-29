@@ -1,0 +1,83 @@
+﻿@page "/AddMenuItem"
+
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+
+<MudGrid Class="mt-6">
+    <MudItem xs="12" sm="4" md="3">
+        <MudCard Elevation="25">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText>Menu Item Image</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <div class="d-flex justify-center mb-4">
+                    @if (Item.Picture == null)
+                    {
+                        <MudAvatar Image="" Style="height:100px; width:100px;">
+                        </MudAvatar>
+
+                    }
+                    else
+                    {
+                        <MudAvatar Image="@($"data:image/png;base64,{Convert.ToBase64String(Item.Picture)}")" Style="height:100px; width:100px;">
+                        </MudAvatar>
+                    }
+
+
+                </div>
+            </MudCardContent>
+            <MudCardActions Class="d-flex justify-center">
+                @if (Item.Picture == null)
+                {
+                    <InputFile id="fileInput" accept=".jpg,.jpeg,.png,.gif" OnChange="UploadFiles" hidden multiple />
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput">Upload Picture</MudButton>
+                }
+                else
+                {
+                    <MudButton OnClick="DeletePicture" HtmlTag="label" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete">Delete Picture</MudButton>
+                }
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="9">
+        <MudCard Elevation="25">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText>Menu Item Details</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    @if (!BranchId.HasValue)
+                    {
+                        <MudItem xs="12" md="6">
+                            <MudSelect @bind-Value="Item.BranchId" Label="Restaurant" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                                @foreach (var branch in BranchElements)
+                                {
+                                    <MudSelectItem Value="branch.Id">@branch.Restaurant</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    }
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.Name" Label="Name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudNumericField @bind-Value="Item.Price" Label="Price" Variant="Variant.Outlined"Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.Description" Label="Description" Variant="Variant.Outlined" Placeholder="Enter your Description here..." Lines="5" />
+                    </MudItem>
+
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChanges">Save Changes</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+</MudGrid>

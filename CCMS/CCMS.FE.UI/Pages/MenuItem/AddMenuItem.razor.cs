@@ -1,51 +1,47 @@
-using CCMS.Common.Dto;
-using CCMS.Common.Dto.Request.Branch;
-using CCMS.Common.Dto.Request.Phone;
 using CCMS.FE.UI.Services;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System;
+using CCMS.Common.Dto.Request.Phone;
+using CCMS.Common.Dto;
+using static MudBlazor.CategoryTypes;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
+using CCMS.Common.Dto.Request.MenuItem;
+using CCMS.Common.Dto.Response.Auth;
+using System.IO;
 
-namespace CCMS.FE.UI.Pages.Branch
+namespace CCMS.FE.UI.Pages.MenuItem
 {
-    public partial class AddBranch
+    public partial class AddMenuItem
     {
+        private Guid? BranchId { get; set; }
         private Guid? RestaurantId { get; set; }
+
         [Inject] NotficationServices? Notfication { get; set; }
         [Inject] NavigationManager? NavigationManager { get; set; }
         [Inject] ApiClient? ApiClient { get; set; }
         [Inject] AuthenticationService? authService { get; set; }
         [Inject] IDialogService? DialogService { get; set; }
         public IBrowserFile? Browser;
-        private void AddNewItem(List<AddOrEditPhone> items)
-        {
-            items.Add(new AddOrEditPhone());
-        }
-
-        private void DeleteItem(AddOrEditPhone item, List<AddOrEditPhone> items)
-        {
-            items.Remove(item);
-        }
-
-        AddOrEditBranche Item =new AddOrEditBranche();
-        private IEnumerable<RestaurantDto> RestaurantElements = new List<RestaurantDto>();
+        private IEnumerable<BranchDto> BranchElements = new List<BranchDto>();
+        AddOrEditMenuItem Item = new AddOrEditMenuItem();
+        GetToken User=new GetToken();
         private async Task LoadItems()
         {
             try
             {
-                Item.Phones = new List<AddOrEditPhone>() { new AddOrEditPhone() };
-                var res = await ApiClient.Restaurant.GetRestaurants();
+                User = authService.GetUser();
+                var req = new Common.Dto.Request.Branch.GetBranches() { RestaurantId= RestaurantId };
+                var res = await ApiClient.Branche.GetBranches(req);
                 if (res.Success)
                 {
-                    RestaurantElements = res.Reasturants;
-                    if (RestaurantElements.Any())
+                    BranchElements = res.Branches;
+                    if (BranchElements.Any())
                     {
-                        Item.RestaurantId = RestaurantElements.First().Id;
+                        Item.BranchId = BranchElements.First().Id;
                     }
                 }
                 else
@@ -53,7 +49,7 @@ namespace CCMS.FE.UI.Pages.Branch
             }
             catch (Exception ex)
             {
-                Serilog.Log.Error($"Pages/Branche/AddBranch.LoadItems : : Unhandeled exception : {ex}");
+                Serilog.Log.Error($"Pages/MenuItem/AddMenuItem.LoadItems : : Unhandeled exception : {ex}");
                 await DialogService.ShowMessageBox("Failed", $"Failed to get ?. Please contact hotline.", yesText: "Ok");
             }
         }
@@ -61,6 +57,10 @@ namespace CCMS.FE.UI.Pages.Branch
         {
             await base.OnInitializedAsync();
             var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("BranchId", out var branchIdId))
+            {
+                BranchId = Guid.Parse(branchIdId);
+            }
             if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("RestaurantId", out var restaurantId))
             {
                 RestaurantId = Guid.Parse(restaurantId);
@@ -82,9 +82,11 @@ namespace CCMS.FE.UI.Pages.Branch
         }
         private async Task SaveChanges()
         {
-            if(RestaurantId.HasValue)
-                Item.RestaurantId= RestaurantId.Value;
-            var res=await ApiClient.Branche.AddBranche(Item);
+            if (User.SystemType == Common.Const.SystemType.Restaurant)
+                Item.BranchId = User.BranchId.Value;
+            else if(BranchId.HasValue)
+                Item.BranchId = BranchId.Value;
+            var res = await ApiClient.MenuItem.AddMenuItem(Item);
             if (res != null)
             {
                 if(res.Success)

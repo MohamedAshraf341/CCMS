@@ -2,7 +2,7 @@
 @inherits LayoutComponentBase
 
 
-<MudThemeProvider Theme="_themeManager.Theme" />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_themeManager.Theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -21,6 +21,9 @@
             <MudText Typo="Typo.subtitle2">Admin Dashboard</MudText>
         </MudHidden>
         <MudSpacer />
+@*         <MudTooltip Text="Toggle Light/Dark">
+            <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => ToggleDarkMode())" />
+        </MudTooltip> *@
         <MudMenu  Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
                 <MudAvatar Image="/images/default-user.jpg" />

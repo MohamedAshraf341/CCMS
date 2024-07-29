@@ -102,6 +102,44 @@ namespace CCMS.FE.UI.Pages.Branch
                 return true;
             return false;
         }
+        private async Task OnDelete(BranchDto item)
+        {
+            var result = await DialogService.ShowMessageBox("Delete Branch", $"Do you want delete {item.Restaurant}?", yesText: "yes", cancelText: "No");
+            if (result == true)
+            {
+                var res = await ApiClient.Branche.DeleteBranche(item.Id);
+                if (res.Success)
+                {
+                    Notfication.ShowMessageSuccess(res.Message);
+                    _ = LoadItems();
+                }
+                else
+                {
+                    Notfication.ShowMessageError(res.Message);
+                }
+            }
+        }
+        private void NavigationToMenuItem(BranchDto item)
+        {
+            if(RestaurantId.HasValue)
+                NavigationManager.NavigateTo($"/MenuItems?RestaurantId={RestaurantId.Value}&BranchId={item.Id}");
+            else
+                NavigationManager.NavigateTo($"/MenuItems?BranchId{item.Id}");
 
+        }
+        private void NavigationToClient(BranchDto item)
+        {
+            if (RestaurantId.HasValue)
+                NavigationManager.NavigateTo($"/Clients?RestaurantId={RestaurantId.Value}&BranchId={item.Id}");
+            else
+                NavigationManager.NavigateTo($"/Clients?BranchId{item.Id}");
+        }
+        private void NavigationToOrder(BranchDto item)
+        {
+            if (RestaurantId.HasValue)
+                NavigationManager.NavigateTo($"/Orders?RestaurantId={RestaurantId.Value}&BranchId={item.Id}");
+            else
+                NavigationManager.NavigateTo($"/Orders?BranchId{item.Id}");
+        }
     }
 }

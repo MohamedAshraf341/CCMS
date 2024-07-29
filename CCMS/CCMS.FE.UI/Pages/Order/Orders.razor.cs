@@ -12,12 +12,14 @@ namespace CCMS.FE.UI.Pages.Order
 {
     public partial class Orders
     {
-        [Inject] NotficationServices Notfication { get; set; }
-        [Inject] NavigationManager NavigationManager { get; set; }
-        [Inject] ApiClient ApiClient { get; set; }
-        [Inject] AuthenticationService authService { get; set; }
-        [Inject] IDialogService DialogService { get; set; }
+        [Inject] NotficationServices? Notfication { get; set; }
+        [Inject] NavigationManager? NavigationManager { get; set; }
+        [Inject] ApiClient? ApiClient { get; set; }
+        [Inject] AuthenticationService? authService { get; set; }
+        [Inject] IDialogService? DialogService { get; set; }
         private Guid? BranchId { get; set; }
+        private Guid? RestaurantId { get; set; }
+
         private bool Loading = false;
         private string searchString1 = "";
         private IEnumerable<OrderDto> Elements = new List<OrderDto>();
@@ -68,6 +70,10 @@ namespace CCMS.FE.UI.Pages.Order
             if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("BranchId", out var branchId))
             {
                 BranchId = Guid.Parse(branchId);
+            }
+            if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("RestaurantId", out var restaurantId))
+            {
+                RestaurantId = Guid.Parse(restaurantId);
             }
             await LoadItems();
         }

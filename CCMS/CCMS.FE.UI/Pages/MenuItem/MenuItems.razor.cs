@@ -5,17 +5,20 @@ using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static MudBlazor.CategoryTypes;
 
 namespace CCMS.FE.UI.Pages.MenuItem
 {
     public partial class MenuItems
     {
         private Guid? BranchId { get; set; }
-        [Inject] NotficationServices Notfication { get; set; }
-        [Inject] NavigationManager NavigationManager { get; set; }
-        [Inject] ApiClient ApiClient { get; set; }
-        [Inject] AuthenticationService authService { get; set; }
-        [Inject] IDialogService DialogService { get; set; }
+        private Guid? RestaurantId { get; set; }
+
+        [Inject] NotficationServices? Notfication { get; set; }
+        [Inject] NavigationManager? NavigationManager { get; set; }
+        [Inject] ApiClient? ApiClient { get; set; }
+        [Inject] AuthenticationService? authService { get; set; }
+        [Inject] IDialogService? DialogService { get; set; }
         private bool Loading = false;
         private string searchString1 = "";
         private IEnumerable<MenuItemDto> Elements = new List<MenuItemDto>();
@@ -59,6 +62,10 @@ namespace CCMS.FE.UI.Pages.MenuItem
             {
                 BranchId = Guid.Parse(branchId);
             }
+            if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("RestaurantId", out var restaurantId))
+            {
+                RestaurantId = Guid.Parse(restaurantId);
+            }
             await LoadItems();
         }
 
@@ -99,6 +106,16 @@ namespace CCMS.FE.UI.Pages.MenuItem
             if (element.CountOrders.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
             return false;
+        }
+        private void NavigateToAddItem()
+        {
+            if(RestaurantId.HasValue&&BranchId.HasValue)
+                NavigationManager.NavigateTo($"/AddMenuItem?RestaurantId={RestaurantId.Value}&BranchId={BranchId}");
+            else if ( BranchId.HasValue)
+                NavigationManager.NavigateTo($"/AddMenuItem?BranchId={BranchId}");
+            else
+                NavigationManager.NavigateTo($"/AddMenuItem");
+
         }
     }
 }

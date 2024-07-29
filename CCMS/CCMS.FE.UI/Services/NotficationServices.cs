@@ -9,13 +9,13 @@ namespace CCMS.FE.UI.Services
         {
             _Snackbar = snackbar;
         }
-        public void ShowMessageError(string Msssage)
+        public void ShowMessageError(string? Msssage)
         {
             _Snackbar.Clear();
             _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
             _Snackbar.Add(Msssage, Severity.Error);
         }
-        public void ShowMessageSuccess(string Msssage)
+        public void ShowMessageSuccess(string? Msssage)
         {
             _Snackbar.Clear();
             _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;

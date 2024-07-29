@@ -26,15 +26,19 @@
 
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Name">@GetHighlightedText(context.Restaurant)</MudTd>
+            <MudTd DataLabel="Restaurant">@GetHighlightedText(context.Restaurant)</MudTd>
             <MudTd DataLabel="Branches">@GetHighlightedText(context.Address)</MudTd>
             <MudTd DataLabel="">
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
                          AriaLabel="Actions">
-                    <MudMenuItem ><MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"></MudIcon> Edit</MudMenuItem>
-                    <MudMenuItem ><MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIcon>Delete</MudMenuItem>
-                    <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.List" Color="Color.Surface"></MudIcon>Menu Items</MudMenuItem>
-                    <MudMenuItem><MudIcon Icon="@Icons.Material.Filled.SupervisedUserCircle" Color="Color.Tertiary"></MudIcon>Clients</MudMenuItem>
+
+@*                     <MudMenuItem ><MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"></MudIcon> Edit</MudMenuItem>
+ *@
+                    <MudMenuItem OnClick="(() => NavigationToMenuItem(context))"><MudIcon Icon="@Icons.Material.Filled.ListAlt" Color="Color.Surface"></MudIcon>Menu Items</MudMenuItem>
+                    <MudMenuItem OnClick="(() => NavigationToClient(context))"><MudIcon Icon="@Icons.Material.Filled.SupervisedUserCircle" Color="Color.Tertiary"></MudIcon>Clients</MudMenuItem>
+                    <MudMenuItem OnClick="(() => NavigationToOrder(context))"><MudIcon Icon="@Icons.Material.Filled.AddIcCall" Color="Color.Secondary"></MudIcon>Orders</MudMenuItem>
+                    <MudMenuItem OnClick="(() => OnDelete(context))"><MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIcon>Delete</MudMenuItem>
+
                 </MudMenu>
             </MudTd>
         </RowTemplate>

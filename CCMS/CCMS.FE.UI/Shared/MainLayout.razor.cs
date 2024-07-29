@@ -20,6 +20,7 @@ namespace CCMS.FE.UI.Shared
         [Inject] NavigationManager NavigationManager { get; set; }
         [Inject] AuthenticationService AuthenticationService { get; set; }
         [Inject] ApiClient ApiClient { get; set; }
+        private bool _isDarkMode=false;
 
         private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
         private List<BreadcrumbItem> _items = new List<BreadcrumbItem> { new BreadcrumbItem("Home", href: "/") };
@@ -35,7 +36,19 @@ namespace CCMS.FE.UI.Shared
         {
             _themeManagerOpen = value;
         }
+        bool ToggleDarkMode()
+        {
+            if (!_isDarkMode)
+            {
+                _isDarkMode = true;
+            }
+            else
+            {
+                _isDarkMode = false;
+            }
+            return _isDarkMode;
 
+        }
         void UpdateTheme(ThemeManagerTheme value)
         {
             _themeManager = value;
