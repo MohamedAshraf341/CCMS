@@ -13,5 +13,7 @@ namespace CCMS.BE.Data.Models
         [Required]
         public Guid OrderId { get; set; }
         public Order order { get; set; }
+        [Required]
+        public int Number { get; set; }
     }
 }

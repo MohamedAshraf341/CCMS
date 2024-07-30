@@ -11,6 +11,8 @@ namespace CCMS.Common.Dto
         public string Name { get; set; }
         public Guid BranchId { get; set; }
         public string BranchName { get; set; }
-        public int CountOrders { get; set; }    
+        public int CountOrders { get; set; }
+        public int Number { get; set; }
+
     }
 }

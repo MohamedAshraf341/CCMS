@@ -10,10 +10,15 @@ namespace CCMS.Common.Dto.Request.Order
     public class AddOrder
     {
         [Required]
-        public string Status { get; set; }
+        public List<MenuItemDto> MenuItems { get; set; }
         [Required]
-        public List<Guid> MenuItemIds { get; set; }
+        public string CustomerName { get; set; }
         [Required]
-        public Guid CustomerId { get; set; }
+        public string CustomerPhone { get; set; }
+        [Required]
+        public string CustomerAddress { get; set; }
+        public Guid? BranchId { get; set; }
+        public string? Notes { get; set; }
+        public string? CreatedBy { get; set; }
     }
 }

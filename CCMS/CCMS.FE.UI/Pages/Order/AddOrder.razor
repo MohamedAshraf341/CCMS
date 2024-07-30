@@ -1,0 +1,80 @@
+﻿@page "/AddOrder"
+@using Microsoft.AspNetCore.Authorization;
+@using System.Globalization
+@attribute [Authorize]
+
+<MudTabs Elevation="25" Color="Color.Transparent" Rounded="true" PanelClass="mt-6">
+    <MudTabPanel Text="Menu Items">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText>Select Items</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    @foreach (var item in MenuItemsElements)
+                    {
+                        <MudCard xs="12" sm="6" md="4">
+                            <MudCardMedia Image="@ConvertToBase64(item.Picture)" Height="200" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5">@item.Name</MudText>
+                                <MudText Typo="Typo.h4">@item.Price.ToString("C", new CultureInfo("ar-EG"))</MudText>
+                                <MudText Typo="Typo.body2">@item.Description</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudGrid>
+                                    <MudItem xs="2">
+                                        <MudIconButton OnClick="(() => OnAddItem(item))" Icon="@Icons.Material.Filled.Add" Color="Color.Warning" />
+                                    </MudItem>
+                                    @if (selectedItems.ContainsKey(item.Id))
+                                    {
+                                        <MudItem xs="3">
+                                            <MudNumericField Min="1" @bind-Value="@selectedItems[item.Id]" Label="Quantity" Variant="Variant.Outlined"></MudNumericField>
+                                        </MudItem>
+                                        <MudItem xs="3">
+                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => OnCancelItem(item))">Cancel</MudButton>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                    
+                </MudGrid>               
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChanges">Save Changes</MudButton>
+            </MudCardActions>
+        </MudCard>
+
+    </MudTabPanel>
+    <MudTabPanel Text="Client">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText>Client Details</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.CustomerName" Label="Name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.CustomerPhone" Label="Phone" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.CustomerAddress" Label="Address" Variant="Variant.Outlined" Placeholder="Enter Address here..." Lines="5" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="SaveChanges">Save Changes</MudButton>
+            </MudCardActions>
+        </MudCard>
+
+    </MudTabPanel>
+</MudTabs>
+

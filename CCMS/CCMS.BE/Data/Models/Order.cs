@@ -20,6 +20,9 @@ namespace CCMS.BE.Data.Models
         public string? CreatedBy { get; set; }
         public ApplicationUser? CreatedUser { get; set; }
         public string? ReceivedBy { get; set; }
+        public string? Notes { get; set; }
+        public bool Confirmed { get; set; } = false;
+        public int Price { get; set; }
         public ApplicationUser? ReceivedUser { get; set; }
         public ICollection<UpdateOrder>? UpdateOrders { get; set; }
         public ICollection<MenuItemOrder>? MenuItemOrders { get; set; }

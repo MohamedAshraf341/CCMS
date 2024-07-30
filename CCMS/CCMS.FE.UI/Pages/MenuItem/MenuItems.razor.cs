@@ -33,7 +33,7 @@ namespace CCMS.FE.UI.Pages.MenuItem
                     var user = authService.GetUser();
                     var req = new Common.Dto.Request.MenuItem.GetMenuItems
                     {
-                        BranchId = BranchId,
+                        BranchId = user.SystemType==Common.Const.SystemType.Restaurant?user.BranchId: BranchId,
                     };
                     var res = await ApiClient.MenuItem.GetMenuItems(req);
                     if (res.Success)
