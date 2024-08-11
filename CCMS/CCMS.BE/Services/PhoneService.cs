@@ -28,7 +28,7 @@ namespace CCMS.BE.Services
             }).ToList();
             return res;
         }
-        public async Task<BaseResponse> AddPhone(AddOrEditPhone model)
+        public async Task<Common.Dto.Response.Phone.AddOrEdit> AddPhone(AddOrEditPhone model)
         {
             try
             {
@@ -37,16 +37,19 @@ namespace CCMS.BE.Services
                     BranchId = model.BranchId,
                     Phone = model.PhoneNumber
                 };
-                await _uow.BranchPhone.AddAsync(item);
+                var phone=await _uow.BranchPhone.AddAsync(item);
                 var res = await _uow.CompleteAsync();
                 if (res > 0)
-                    return new BaseResponse { Success = true, Message = "Phone Added successfully." };
+                {
+                    var phonedto = new PhoneNumberDto { BranchId=phone.BranchId,PhoneNumber=phone.Phone,Id=phone.Id};
+                    return new Common.Dto.Response.Phone.AddOrEdit { Success = true, Message = "Phone Added successfully." };
+                }
                 else
-                    return new BaseResponse { Success = false, Message = "There are error." };
+                    return new Common.Dto.Response.Phone.AddOrEdit { Success = false, Message = "There are error." };
             }
             catch (Exception ex)
             {
-                return new BaseResponse { Success = false, Message = ex.Message };
+                return new Common.Dto.Response.Phone.AddOrEdit { Success = false, Message = ex.Message };
             }
         }
         public async Task<BaseResponse> EditPhone(AddOrEditPhone model)

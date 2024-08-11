@@ -18,6 +18,9 @@ using CCMS.BE.Settings;
 using CCMS.BE.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
+using CCMS.BE.Data.Seeds;
+using System.Threading.Tasks;
+using CCMS.BE.Hubs;
 
 namespace CCMS.BE
 {
@@ -53,7 +56,6 @@ namespace CCMS.BE
                         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
 
             );
-            
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -84,9 +86,10 @@ namespace CCMS.BE
                 options.AddPolicy("AllowAll",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
+                        builder.WithOrigins("https://localhost:5002")
                                .AllowAnyMethod()
-                               .AllowAnyHeader();
+                               .AllowAnyHeader()
+                               .AllowCredentials();
                     });
             });
             services.AddSwaggerGen(c =>
@@ -121,11 +124,12 @@ namespace CCMS.BE
                                 }
                             });
             });
+            services.AddSignalR();
             services.AddServices();
 
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, IUnitOfWork uow)
         {
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
@@ -133,6 +137,8 @@ namespace CCMS.BE
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BE v1"));
+                // Seed default users
+                SeedData(userManager, uow).Wait();
             }
             app.UseRouting();
             app.UseCors("AllowAll");
@@ -141,7 +147,14 @@ namespace CCMS.BE
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<OrderHub>("/orderHub");
+
             });
+            
+        }
+        private async Task SeedData(UserManager<ApplicationUser> userManager, IUnitOfWork uow)
+        {
+            await DefaultUsers.SeedUserAsync(userManager, uow);
         }
     }
 }

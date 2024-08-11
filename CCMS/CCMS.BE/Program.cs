@@ -1,10 +1,15 @@
+using CCMS.BE.Data.Models;
+using CCMS.BE.Data.Seeds;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 
 namespace CCMS.BE
@@ -43,6 +48,8 @@ namespace CCMS.BE
 
                 Console.WriteLine("Building host ...");
                 var host = hostBuilder.Build();
+
+
 
                 Console.WriteLine("Running host ...");
                 host.Run();

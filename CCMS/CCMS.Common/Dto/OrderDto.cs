@@ -19,6 +19,11 @@ namespace CCMS.Common.Dto
         public string? ReceivedBy { get; set; }
         public string? ReceivedName { get; set; }
         public string? Restaurant { get; set; }
-
+        public string? Notes { get; set; }
+        public int? Price { get; set;}
+        public Guid? BranchId { get; set; }
+        public Guid? CustomerId { get; set; }
+        public bool Confirmed { get; set; }
+        public List<MenuItemDto>? Menus { get; set;}
     }
 }

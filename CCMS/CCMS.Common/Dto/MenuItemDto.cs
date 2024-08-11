@@ -6,6 +6,7 @@ namespace CCMS.Common.Dto
     {
         public Guid Id { get; set; }
         public int Price { get; set; }
+        public int TotalPrice { get; set; }
         public string? Description { get; set; }
         public byte[]? Picture { get; set; }
         public string Name { get; set; }

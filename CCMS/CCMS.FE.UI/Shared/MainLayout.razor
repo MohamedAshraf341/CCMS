@@ -21,9 +21,53 @@
             <MudText Typo="Typo.subtitle2">Admin Dashboard</MudText>
         </MudHidden>
         <MudSpacer />
-@*         <MudTooltip Text="Toggle Light/Dark">
+        <MudTooltip Text="Toggle Light/Dark">
             <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => ToggleDarkMode())" />
-        </MudTooltip> *@
+        </MudTooltip>
+        @if (User != null && User.SystemType==Common.Const.SystemType.Restaurant && AuthenticationService.UserHasOneOfRole(Common.Const.Roles.User.Name))
+        {
+            @if (OrderElements != null && OrderElements.Count()>0)
+            {
+                <MudBadge Dot="false" Content="@CountOrder" Color="Color.Error" Class="mt-5 mr-3">
+                    <MudMenu Dense="true">
+                        <ActivatorContent>
+                            <MudAvatar Image="/images/notification.jpg" />
+                        </ActivatorContent>
+                        <ChildContent>
+                            @foreach (var item in OrderElements)
+                            {
+                                <MudMenuItem OnClick="(() => OnOrderDetails(item))">
+
+                                    <MudGrid>
+                                        <MudItem xs="12">@item.CustomerName</MudItem>
+                                       @*  <MudItem xs="3">
+                                            <MudButton Variant="Variant.Filled" Color="Color.Success">Confirm</MudButton>
+                                        </MudItem> *@
+                                    </MudGrid>
+                                </MudMenuItem>
+                            }
+                            
+                        </ChildContent>
+
+                    </MudMenu>
+                </MudBadge>
+            }
+            else
+            {
+                <MudMenu Dense="true">
+                    <ActivatorContent>
+                        <MudAvatar Image="/images/notification.jpg" />
+                    </ActivatorContent>
+                    <ChildContent>
+                    </ChildContent>
+
+                </MudMenu>
+            }
+
+        }
+
+       
+
         <MudMenu  Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
                 <MudAvatar Image="/images/default-user.jpg" />

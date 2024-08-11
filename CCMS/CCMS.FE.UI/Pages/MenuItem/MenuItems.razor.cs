@@ -1,4 +1,5 @@
 using CCMS.Common.Dto;
+using CCMS.Common.Dto.Response.Auth;
 using CCMS.FE.UI.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -22,6 +23,8 @@ namespace CCMS.FE.UI.Pages.MenuItem
         private bool Loading = false;
         private string searchString1 = "";
         private IEnumerable<MenuItemDto> Elements = new List<MenuItemDto>();
+        GetToken User = new GetToken();
+
         private async Task LoadItems()
         {
             Loading = true;
@@ -30,10 +33,10 @@ namespace CCMS.FE.UI.Pages.MenuItem
             {
                 try
                 {
-                    var user = authService.GetUser();
+                    User = authService.GetUser();
                     var req = new Common.Dto.Request.MenuItem.GetMenuItems
                     {
-                        BranchId = user.SystemType==Common.Const.SystemType.Restaurant?user.BranchId: BranchId,
+                        BranchId = User.SystemType==Common.Const.SystemType.Restaurant? User.BranchId: BranchId,
                     };
                     var res = await ApiClient.MenuItem.GetMenuItems(req);
                     if (res.Success)

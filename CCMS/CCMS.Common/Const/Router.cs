@@ -64,6 +64,7 @@
             public const string AddOrder = Prefix + "/AddOrder";
             public const string EditOrder = Prefix + "/EditOrder";
             public const string DeleteOrder = Prefix + "/DeleteOrder";
+            public const string ConfirmOrder = Prefix + "/ConfirmOrder";
 
         }
         public static class Client

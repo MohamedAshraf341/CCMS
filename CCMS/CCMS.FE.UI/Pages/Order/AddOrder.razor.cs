@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 using System;
 using CCMS.Common.Dto;
 using CCMS.Common.Dto.Response.Auth;
+using System.Linq;
+using static MudBlazor.CategoryTypes;
 
 namespace CCMS.FE.UI.Pages.Order
 {
     public partial class AddOrder
     {
+        private Guid? selectedBranchId = null; // Initialize to null
+
         private Guid? BranchId { get; set; }
         private Guid? RestaurantId { get; set; }
         [Inject] NotficationServices? Notfication { get; set; }
@@ -19,6 +23,8 @@ namespace CCMS.FE.UI.Pages.Order
         [Inject] AuthenticationService? authService { get; set; }
         [Inject] IDialogService? DialogService { get; set; }
         private IEnumerable<MenuItemDto> MenuItemsElements = new List<MenuItemDto>();
+        private IEnumerable<BranchDto> BranchElements = new List<BranchDto>();
+
         Common.Dto.Request.Order.AddOrder Item = new Common.Dto.Request.Order.AddOrder();
         GetToken User = new GetToken();
         private Dictionary<Guid, int> selectedItems = new Dictionary<Guid, int>();
@@ -27,14 +33,24 @@ namespace CCMS.FE.UI.Pages.Order
         {
             try
             {
-                User = authService.GetUser();
-                var req = new Common.Dto.Request.MenuItem.GetMenuItems
+                User = authService.GetUser();               
+                if(!BranchId.HasValue)
                 {
-                    BranchId = User.SystemType == Common.Const.SystemType.Restaurant ? User.BranchId : BranchId,
-                };
-                var res = await ApiClient.MenuItem.GetMenuItems(req);
-                if (res.Success)
-                    MenuItemsElements = res.MenuItems;
+                    var reqbranch = new Common.Dto.Request.Branch.GetBranches() { };
+                    var branchesRes = await ApiClient.Branche.GetBranches(reqbranch);
+                    if (branchesRes != null && branchesRes.Success)
+                        BranchElements = branchesRes.Branches;
+                }
+                else
+                {
+                    var req = new Common.Dto.Request.MenuItem.GetMenuItems
+                    {
+                        BranchId = User.SystemType == Common.Const.SystemType.Restaurant ? User.BranchId : BranchId,
+                    };
+                    var res = await ApiClient.MenuItem.GetMenuItems(req);
+                    if (res.Success)
+                        MenuItemsElements = res.MenuItems;
+                }
             }
             catch (Exception ex)
             {
@@ -62,6 +78,19 @@ namespace CCMS.FE.UI.Pages.Order
                 Item.BranchId = User.BranchId.Value;
             else if (BranchId.HasValue)
                 Item.BranchId = BranchId.Value;
+            else
+                Item.BranchId = selectedBranchId;
+            // Populate Item.MenuItems with selected items from MenuItemsElements
+            Item.MenuItems = MenuItemsElements.Where(item => selectedItems.ContainsKey(item.Id)).ToList();
+            Item.CreatedBy = User.Id;
+            var res = await ApiClient.Order.AddOrder(Item);
+            if (res != null)
+            {
+                if(res.Success)
+                    Notfication.ShowMessageSuccess(res.Message);
+                else
+                    Notfication.ShowMessageError(res.Message);
+            }
         }
         private string ConvertToBase64(byte[]? imageBytes)
         {
@@ -82,6 +111,14 @@ namespace CCMS.FE.UI.Pages.Order
                 selectedItems.Remove(item.Id); // Remove the item from selectedItems
                 item.Number = 0; // Reset the item's number to 0
             }
+        }
+        private async Task OnValueChanged(Guid? branchId)
+        {
+            var req = new Common.Dto.Request.MenuItem.GetMenuItems {BranchId= branchId };
+            var menuItemsREs = await ApiClient.MenuItem.GetMenuItems(req);
+            if (menuItemsREs != null && menuItemsREs.Success)
+                MenuItemsElements = menuItemsREs.MenuItems;
+            selectedBranchId = branchId;
         }
     }
 }

@@ -1,0 +1,38 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudTable Items="@Items" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@Loading" LoadingProgressColor="Color.Info">
+            <HeaderContent>
+                <MudTh>Phone</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Phone">
+                    @if (context.IsEditing)
+                    {
+                        <MudTextField @bind-Value="context.PhoneNumber" />
+                    }
+                    else
+                    {
+                        @context.PhoneNumber
+                    }
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    @if (context.IsEditing)
+                    {
+                        <MudButton OnClick="() => SaveItem(context)">Save</MudButton>
+                        <MudButton OnClick="() => CancelEdit(context)">Cancel</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton OnClick="() => EditItem(context)">Edit</MudButton>
+                        <MudButton OnClick="() => DeleteItem(context)">Delete</MudButton>
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="AddNewItem">Add New</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>

@@ -1,4 +1,5 @@
 ﻿using CCMS.BE.Data.Models;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Threading.Tasks;
 
@@ -19,5 +20,6 @@ public interface IUnitOfWork : IDisposable
     ICustomerRepository Customer { get; }
     IMenuItemRepository MenuItem { get; }
     Task<int> CompleteAsync();
+    Task<IDbContextTransaction> BeginTransactionAsync();
 
 }

@@ -8,7 +8,7 @@ namespace CCMS.Common.Const
 {
     public static class SystemType
     {
-        public static string System = "System";
+        public const string System = "System";
         public const string Restaurant = "Restaurant";
 
     }

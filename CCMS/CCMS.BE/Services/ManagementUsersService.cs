@@ -64,7 +64,8 @@ public class ManagementUsersService : IManagementUsersService
                 Email = model.Email,
                 Name = model.Name,
                 UserName=model.Email,
-                SystemType=model.SystemType
+                SystemType=model.SystemType,
+                EmailConfirmed = true
             };
             var passwordUser = PasswordGenerator.GeneratePassword();
             var result = await _userManager.CreateAsync(user, passwordUser);

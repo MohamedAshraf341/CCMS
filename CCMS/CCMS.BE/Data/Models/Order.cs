@@ -21,7 +21,7 @@ namespace CCMS.BE.Data.Models
         public ApplicationUser? CreatedUser { get; set; }
         public string? ReceivedBy { get; set; }
         public string? Notes { get; set; }
-        public bool Confirmed { get; set; } = false;
+        public bool Confirmed { get; set; } 
         public int Price { get; set; }
         public ApplicationUser? ReceivedUser { get; set; }
         public ICollection<UpdateOrder>? UpdateOrders { get; set; }

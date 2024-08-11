@@ -9,10 +9,10 @@ namespace CCMS.BE.Data.Models
         public Guid Id { get; set; }
         [Required]
         public Guid MenuItemId { get; set; }
-        public MenuItem MenuItem { get; set; }
+        public MenuItem? MenuItem { get; set; }
         [Required]
         public Guid OrderId { get; set; }
-        public Order order { get; set; }
+        public Order? order { get; set; }
         [Required]
         public int Number { get; set; }
     }

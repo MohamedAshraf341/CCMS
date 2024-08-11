@@ -1,6 +1,7 @@
 ﻿using CCMS.BE.Data.Models;
 using CCMS.BE.Data.Repositories;
 using CCMS.BE.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Threading.Tasks;
 namespace CCMS.BE.Data;
 
@@ -45,6 +46,10 @@ public class UnitOfWork : IUnitOfWork
     {
         var num = await _context.SaveChangesAsync();
         return num;
+    }
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await _context.Database.BeginTransactionAsync();
     }
     public void Dispose()
     {

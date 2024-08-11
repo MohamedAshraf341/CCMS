@@ -9,4 +9,5 @@ public class User
     public string Email { get; set; }
     public string Password { get; set; }
     public bool ConfirmEmail { get; set; }
+    public string SystemType { get; set; }
 }

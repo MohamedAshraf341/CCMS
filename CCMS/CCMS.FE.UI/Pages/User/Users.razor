@@ -3,69 +3,76 @@
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
-<MudContainer>
-    <MudGrid Justify="Justify.FlexEnd" Class="mb-4 pa-4">
-        <MudTextField @bind-Value="searchString1"
-                      Placeholder="Search"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      IconSize="Size.Medium"
-                      Variant="Variant.Filled"
-                      Class="mr-4 ">
-        </MudTextField>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="AddUser">
-        </MudButton>
+<MudCard Class="pa-5 ma-5">
+    <MudCardHeader>
+        <MudGrid Class="mr-1 ml-1">
+            <MudTextField @bind-Value="searchString1"
+                          Placeholder="Search"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          IconSize="Size.Medium"
+                          Variant="Variant.Filled"
+                          Class="mr-4 ">
+            </MudTextField>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="AddUser">
+            </MudButton>
 
-    </MudGrid>
-    <MudTable Filter="new Func<UsersDto,bool>(FilterFunc1)" Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Striped="true" Bordered="true" CustomHeader="true" Loading="@Loading" LoadingProgressColor="Color.Info" Class="mb-10">
+        </MudGrid>
 
-        <HeaderContent>
-            <MudTHeadRow Style="background-color:#1E88E5">
-                <MudTh><b>Picture</b></MudTh>
-                <MudTh><b>Name</b></MudTh>
-                <MudTh><b>Email</b></MudTh>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Filter="new Func<UsersDto,bool>(FilterFunc1)" Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Striped="true" Bordered="true" CustomHeader="true" Loading="@Loading" LoadingProgressColor="Color.Info" Class="mb-10">
+
+            <HeaderContent>
+                <MudTHeadRow Class="mud-theme-primary">
+                    <MudTh><b>Picture</b></MudTh>
+                    <MudTh><b>Name</b></MudTh>
+                    <MudTh><b>Email</b></MudTh>
+                    @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
+                    {
+                        @*  <MudTh><b>Restaurant</b></MudTh>
+                    <MudTh><b>Branch</b></MudTh> *@
+                        <MudTh><b>System Type</b></MudTh>
+                    }
+                    <MudTh></MudTh>
+                </MudTHeadRow>
+            </HeaderContent>
+
+            <RowTemplate>
+
+                <MudTd DataLabel="Picture">
+                    @if (context.Picture != null && context.Picture.Length > 0)
+                    {
+                        <MudAvatar Image="@($"data:image/png;base64,{Convert.ToBase64String(context.Picture)}")"></MudAvatar>
+                    }
+                    else
+                    {
+                        <MudAvatar Image="/images/default-user.jpg"></MudAvatar>
+                    }
+                </MudTd>
+
+                <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
+                <MudTd DataLabel="Email">@GetHighlightedText(context.Email)</MudTd>
+
                 @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
                 {
-                   @*  <MudTh><b>Restaurant</b></MudTh>
-                    <MudTh><b>Branch</b></MudTh> *@
-                    <MudTh><b>System Type</b></MudTh>
-                }
-                <MudTh></MudTh>
-            </MudTHeadRow>
-        </HeaderContent>
-
-        <RowTemplate>
-
-            <MudTd DataLabel="Picture">@if (context.Picture != null && context.Picture.Length > 0)
-                {
-                    <MudAvatar Image="@($"data:image/png;base64,{Convert.ToBase64String(context.Picture)}")"></MudAvatar>
-                }
-                else
-                {
-                    <MudAvatar Image="/images/default-user.jpg"></MudAvatar>
-                }
-            </MudTd>
-
-            <MudTd DataLabel="Name">@GetHighlightedText(context.Name)</MudTd>
-            <MudTd DataLabel="Email">@GetHighlightedText(context.Email)</MudTd>
-
-            @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
-            {
-@*                 <MudTd DataLabel="Restaurant">@GetHighlightedText(context.Restaurant)</MudTd>
+                    @*                 <MudTd DataLabel="Restaurant">@GetHighlightedText(context.Restaurant)</MudTd>
                 <MudTd DataLabel="Branch">@GetHighlightedText(GetFormattedAddress(context.Area, context.City, context.Government))</MudTd> *@
-                <MudTd DataLabel="System Type">@GetHighlightedText(context.SystemType)</MudTd>
-            }
+                    <MudTd DataLabel="System Type">@GetHighlightedText(context.SystemType)</MudTd>
+                }
 
 
-            <MudTd DataLabel="">
-                <MudMenu Icon="@Icons.Material.Filled.MoreVert"
-                         AriaLabel="Actions">
-                    <MudMenuItem OnClick="(() => DeleteUser(context))"><MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIcon>Delete</MudMenuItem>
-                </MudMenu>
-            </MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager />
-        </PagerContent>
-    </MudTable>
-</MudContainer>
+                <MudTd DataLabel="">
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                             AriaLabel="Actions">
+                        <MudMenuItem OnClick="(() => DeleteUser(context))"><MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIcon>Delete</MudMenuItem>
+                    </MudMenu>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+
+    </MudCardContent>
+</MudCard>

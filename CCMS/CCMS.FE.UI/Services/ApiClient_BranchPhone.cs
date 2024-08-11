@@ -19,9 +19,9 @@ namespace CCMS.FE.UI.Services
             var res = await ApiHttpClient.Get<List<PhoneNumberDto>>(Router.BranchPhone.GetBranchPhones+ $"/{branchId}");
             return res;
         }
-        internal async Task<BaseResponse> AddBranchPhone(AddOrEditPhone model)
+        internal async Task<Common.Dto.Response.Phone.AddOrEdit> AddBranchPhone(AddOrEditPhone model)
         {
-            var res= await ApiHttpClient.Post<AddOrEditPhone, BaseResponse>(Router.BranchPhone.AddBranchPhone, model);
+            var res= await ApiHttpClient.Post<AddOrEditPhone, Common.Dto.Response.Phone.AddOrEdit>(Router.BranchPhone.AddBranchPhone, model);
             return res;
         }
         internal async Task<BaseResponse> EditBranchPhone(AddOrEditPhone model)

@@ -7,6 +7,7 @@ namespace CCMS.Common.Dto.Request.Order
         public Guid? BranchId { get; set; }
         public string? CreatedBy { get; set; }
         public string? ReceivedBy { get; set; }
+        public bool? Confirmed { get; set; }
 
     }
 }

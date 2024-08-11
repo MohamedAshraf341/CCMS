@@ -3,12 +3,30 @@
 <MudDivider Class="mb-4" />
 <MudNavMenu>
     <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
-    <MudNavLink Href="/Restaurants" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Restaurants</MudNavLink>
-    <MudNavLink Href="/Branches" Icon="@Icons.Material.Filled.FoodBank" Match="NavLinkMatch.All">Branches</MudNavLink>
-    <MudNavLink Href="/MenuItems" Icon="@Icons.Material.Filled.ListAlt" Match="NavLinkMatch.All">MenuItems</MudNavLink>
-    <MudNavLink Href="/Orders" Icon="@Icons.Material.Filled.AddIcCall" Match="NavLinkMatch.All">Orders</MudNavLink>
-    <MudNavLink Href="/Clients" Icon="@Icons.Material.Filled.SupervisedUserCircle" Match="NavLinkMatch.All">Clients</MudNavLink>
-    <MudNavLink Href="/Users" Icon="@Icons.Material.Filled.People" Match="NavLinkMatch.All">Users</MudNavLink>
+    @if (User.SystemType == Common.Const.SystemType.System && authService.UserHasOneOfRole(Common.Const.Roles.Admin.Name))
+    {
+        <MudNavLink Href="/Restaurants" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Restaurants</MudNavLink>
+    }
+    @if (User.SystemType == Common.Const.SystemType.System && authService.UserHasOneOfRole(Common.Const.Roles.Admin.Name))
+    {
+        <MudNavLink Href="/Branches" Icon="@Icons.Material.Filled.FoodBank" Match="NavLinkMatch.All">Branches</MudNavLink>
+    }
+    @if (authService.UserHasOneOfRole(Common.Const.Roles.Admin.Name))
+    {
+        <MudNavLink Href="/MenuItems" Icon="@Icons.Material.Filled.ListAlt" Match="NavLinkMatch.All">MenuItems</MudNavLink>
+    }
+    @if (!authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
+    {
+        <MudNavLink Href="/Orders" Icon="@Icons.Material.Filled.AddIcCall" Match="NavLinkMatch.All">Orders</MudNavLink>
+    }
+    @if (authService.UserHasOneOfRole(Common.Const.Roles.Admin.Name))
+    {
+        <MudNavLink Href="/Clients" Icon="@Icons.Material.Filled.SupervisedUserCircle" Match="NavLinkMatch.All">Clients</MudNavLink>
+    }
+    @if (authService.UserHasOneOfRole(Common.Const.Roles.Admin.Name, Common.Const.Roles.SuperAdmin.Name))
+    {
+        <MudNavLink Href="/Users" Icon="@Icons.Material.Filled.People" Match="NavLinkMatch.All">Users</MudNavLink>
+    }
 </MudNavMenu>
 
  

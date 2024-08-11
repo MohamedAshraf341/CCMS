@@ -11,5 +11,7 @@ namespace CCMS.Common.Dto
         public Guid Id { get; set; }
         public string PhoneNumber { get; set; }
         public Guid BranchId { get; set; }
+        public bool IsEditing { get; set; }
+
     }
 }

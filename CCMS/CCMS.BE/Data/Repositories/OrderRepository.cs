@@ -17,19 +17,25 @@ public class OrderRepository:BaseRepository<Order>, IOrderRepository
     public async Task<IEnumerable<Order>> GetAllWithInclude(Common.Dto.Request.Order.GetOrders req)
     {
         var query = _context.Orders
+            .Include(o => o.MenuItemOrders)
+            .ThenInclude(m => m.MenuItem)
             .Include(o => o.customer)
             .Include(o => o.CreatedUser)
             .Include(o => o.ReceivedUser)
             .Include(o => o.Branch)
             .ThenInclude(o => o.Restaurant)
             .AsQueryable();
+
         if (req.BranchId.HasValue)
-            query.Where(o => o.BranchId == req.BranchId.Value);
-        if(!string.IsNullOrEmpty(req.CreatedBy))
-            query.Where(o => o.CreatedBy == req.CreatedBy);
+            query = query.Where(o => o.BranchId == req.BranchId.Value);
+        if (!string.IsNullOrEmpty(req.CreatedBy))
+            query = query.Where(o => o.CreatedBy == req.CreatedBy);
         if (!string.IsNullOrEmpty(req.ReceivedBy))
-            query.Where(o => o.CreatedBy == req.ReceivedBy);
-        var items=await query.ToListAsync();
+            query = query.Where(o => o.ReceivedBy == req.ReceivedBy);
+        if (req.Confirmed.HasValue)
+            query = query.Where(o => o.Confirmed == req.Confirmed.Value);
+
+        var items = await query.ToListAsync();
         return items;
     }
 }

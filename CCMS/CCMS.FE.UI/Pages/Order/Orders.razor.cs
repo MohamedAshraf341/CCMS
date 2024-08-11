@@ -45,6 +45,8 @@ namespace CCMS.FE.UI.Pages.Order
                         req.CreatedBy = User.SystemType == Common.Const.SystemType.System ? User.Id : null;
                         req.ReceivedBy = User.SystemType == Common.Const.SystemType.Restaurant ? User.Id : null;
                     }
+                    if (User.SystemType == Common.Const.SystemType.Restaurant)
+                        req.Confirmed = true;
                     var res = await ApiClient.Order.GetOrders(req);
                     if (res.Success)
                         Elements = res.Orders;
@@ -134,6 +136,23 @@ namespace CCMS.FE.UI.Pages.Order
 
 
             return dateTime.ToString("MM/dd/yyyy h:mm tt");
+        }
+        private void NavigateToAddOrder()
+        {
+            if (RestaurantId.HasValue && BranchId.HasValue)
+                NavigationManager.NavigateTo($"/AddOrder?RestaurantId={RestaurantId.Value}&BranchId={BranchId}");
+            else if (BranchId.HasValue)
+                NavigationManager.NavigateTo($"/AddOrder?BranchId={BranchId}");
+            else
+                NavigationManager.NavigateTo($"/AddOrder");
+
+        }
+        private async Task OnOrderDetails(OrderDto Order)
+        {
+            var ConfirmOrder = new Common.Dto.Request.Order.ConfirmOrder { };
+            var parameters = new DialogParameters { { "Order", Order }, { "ConfirmOrder", ConfirmOrder }, { "ConfirmButton", false } };
+            var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+            var dialog = DialogService.Show<Components.Order.Details>("Details Order", parameters, options);
         }
     }
 }

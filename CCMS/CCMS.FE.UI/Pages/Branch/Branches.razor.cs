@@ -119,12 +119,18 @@ namespace CCMS.FE.UI.Pages.Branch
                 }
             }
         }
+        private void OnPhoneNumber(BranchDto item)
+        {
+            var parameters = new DialogParameters { { "BranchId", item.Id } };
+            var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var dialog = DialogService.Show<Components.Branch.PhoneNumbers>("Phone Numbers", parameters, options);
+        }
         private void NavigationToMenuItem(BranchDto item)
         {
             if(RestaurantId.HasValue)
                 NavigationManager.NavigateTo($"/MenuItems?RestaurantId={RestaurantId.Value}&BranchId={item.Id}");
             else
-                NavigationManager.NavigateTo($"/MenuItems?BranchId{item.Id}");
+                NavigationManager.NavigateTo($"/MenuItems?BranchId={item.Id}");
 
         }
         private void NavigationToClient(BranchDto item)
@@ -132,14 +138,21 @@ namespace CCMS.FE.UI.Pages.Branch
             if (RestaurantId.HasValue)
                 NavigationManager.NavigateTo($"/Clients?RestaurantId={RestaurantId.Value}&BranchId={item.Id}");
             else
-                NavigationManager.NavigateTo($"/Clients?BranchId{item.Id}");
+                NavigationManager.NavigateTo($"/Clients?BranchId={item.Id}");
         }
         private void NavigationToOrder(BranchDto item)
         {
             if (RestaurantId.HasValue)
                 NavigationManager.NavigateTo($"/Orders?RestaurantId={RestaurantId.Value}&BranchId={item.Id}");
             else
-                NavigationManager.NavigateTo($"/Orders?BranchId{item.Id}");
+                NavigationManager.NavigateTo($"/Orders?BranchId={item.Id}");
+        }
+        private void NavigationToAddOrder(BranchDto item)
+        {
+            if (RestaurantId.HasValue)
+                NavigationManager.NavigateTo($"/AddOrder?RestaurantId={RestaurantId.Value}&BranchId={item.Id}");
+            else
+                NavigationManager.NavigateTo($"/AddOrder?BranchId={item.Id}");
         }
     }
 }

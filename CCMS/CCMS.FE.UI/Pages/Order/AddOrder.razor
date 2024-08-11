@@ -12,11 +12,21 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudGrid>
+                <MudGrid Class="mb-3">
+                    <MudItem xs="12">
+                        <MudSelect T="Guid?" Label="Branch" Variant="Variant.Outlined" ValueChanged="OnValueChanged" Value="selectedBranchId">
+                            @foreach (var item in BranchElements)
+                            {
+                                <MudSelectItem T="Guid?" Value="item.Id">@item.Restaurant , @item.Address</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="ma-5">
                     @foreach (var item in MenuItemsElements)
                     {
-                        <MudCard xs="12" sm="6" md="4">
-                            <MudCardMedia Image="@ConvertToBase64(item.Picture)" Height="200" />
+                        <MudCard xs="12" sm="6" md="4" Class="border-solid border-2 mud-border-primary">
+                            <MudCardMedia Class="border-solid border-2 mud-border-primary" Image="@ConvertToBase64(item.Picture)" Height="200" />
                             <MudCardContent>
                                 <MudText Typo="Typo.h5">@item.Name</MudText>
                                 <MudText Typo="Typo.h4">@item.Price.ToString("C", new CultureInfo("ar-EG"))</MudText>
@@ -67,6 +77,9 @@
                     </MudItem>
                     <MudItem xs="12" md="6">
                         <MudTextField @bind-Value="Item.CustomerAddress" Label="Address" Variant="Variant.Outlined" Placeholder="Enter Address here..." Lines="5" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Item.Notes" Label="Notes" Variant="Variant.Outlined" Placeholder="Enter Client Notes here..." Lines="5" />
                     </MudItem>
                 </MudGrid>
             </MudCardContent>

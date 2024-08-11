@@ -1,0 +1,103 @@
+﻿<MudDialog Class="dialog-scrollable-content">
+    <DialogContent >
+        <!-- Restaurant Information -->
+        <MudCard Class="mb-5">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6"><strong>Restaurant Details</strong></MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid Class="ma-5 ">
+                    <MudItem xs="6">
+                        <MudText><strong>Restaurant: </strong>@Order.Restaurant</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText><strong>ReceivedBy: </strong>@Order.ReceivedName</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+        <!-- Client Information -->
+        <MudCard Class="mb-5">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6"><strong>Client Details</strong></MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid Class="ma-5 ">
+                    <MudItem xs="6">
+                        <MudText><strong>Customer Name: </strong>@Order.CustomerName</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText><strong>Customer Phone: </strong>@Order.CustomerPhone</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText><strong>Customer address: </strong>@Order.CustomerAddress</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+        <!-- Order Information -->
+        <MudCard Class="mb-5">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6"><strong>Order Details</strong></MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid Class="ma-5 ">
+                    <MudItem xs="6">
+                        <MudText><strong>Creation Date: </strong>@FormatTime(Order.CreationDate)</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText><strong>Creation By: </strong>@Order.CreatedName</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText><strong>Status: </strong>@Order.Status</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText><strong>Price: </strong>@GetPrice(Order.Menus)</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+        <!-- Menu Items -->
+        <MudCard>
+            <MudCardHeader>
+                <MudText Typo="Typo.h6"><strong>Menu Items</strong></MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    @foreach (var menuItem in Order.Menus)
+                    {
+                        <MudItem xs="12" md="6" lg="4">
+                            <MudCard>
+                                <MudCardHeader>
+                                    <MudText Typo="Typo.h6">@menuItem.Name</MudText>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudText>@menuItem.Description</MudText>
+                                    <MudSpacer />
+                                    <MudText><strong>Number: </strong>@menuItem.Number</MudText>
+                                    <MudText><strong>Price: </strong>@menuItem.Price</MudText>
+                                    <MudText><strong>Total Price: </strong>@menuItem.TotalPrice</MudText>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+        @if (ConfirmButton)
+        {
+            <MudButton Color="Color.Primary" OnClick="Confirm">Confirm</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+
+<style>
+    .dialog-scrollable-content {
+        max-height: 500px; /* Set the desired max height */
+        overflow-y: auto;
+    }
+</style>
