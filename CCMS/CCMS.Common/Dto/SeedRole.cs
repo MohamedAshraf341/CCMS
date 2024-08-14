@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace CCMS.Common.Models;
+namespace CCMS.Common.Dto;
 
-public class Role
+public class SeedRole
 {
     public string Id { get; set; }
     public string Name { get; set; }

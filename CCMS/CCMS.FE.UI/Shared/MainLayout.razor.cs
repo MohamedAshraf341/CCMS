@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CCMS.Common.Dto;
-using CCMS.Common.Dto.Request;
 using CCMS.Common.Dto.Request.Auth;
-using CCMS.Common.Dto.Request.Restaurant;
-using CCMS.Common.Models;
+using CCMS.Common.Helpers;
 using CCMS.FE.UI.Services;
 using CCMS.FE.UI.Theme;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
-using MudBlazor.Extensions;
 using MudBlazor.ThemeManager;
 using Serilog;
 
@@ -30,8 +27,8 @@ namespace CCMS.FE.UI.Shared
         private IEnumerable<OrderDto> OrderElements = new List<OrderDto>();
         private Common.Dto.Response.Auth.GetToken User = new Common.Dto.Response.Auth.GetToken();
         private int CountOrder;
-
-        private bool _isDarkMode = false;
+        Common.Dto.AppSettingDto DarkModeItem {  get; set; } 
+        private bool _isDarkMode {  get; set; }
 
         private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
         private List<BreadcrumbItem> _items = new List<BreadcrumbItem> { new BreadcrumbItem("Home", href: "/") };
@@ -49,10 +46,11 @@ namespace CCMS.FE.UI.Shared
             _themeManagerOpen = value;
         }
 
-        bool ToggleDarkMode()
+        private async Task ToggleDarkMode()
         {
             _isDarkMode = !_isDarkMode;
-            return _isDarkMode;
+            AppSettingHelper.SetValue(DarkModeItem, _isDarkMode);
+            await ApiClient.AppSetting.Edit(DarkModeItem);
         }
 
         void UpdateTheme(ThemeManagerTheme value)
@@ -64,6 +62,17 @@ namespace CCMS.FE.UI.Shared
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            var darkMode = await ApiClient.AppSetting.GetById(Common.Const.AppSetting.DarkMode.Id);
+            if (darkMode != null )
+            {
+                DarkModeItem=darkMode;
+                if(AppSettingHelper.GetValue<bool>(darkMode))
+                    _isDarkMode = true;
+                else
+                    _isDarkMode = false;
+            }
+            else
+                _isDarkMode = false;
             User = AuthenticationService.GetUser();
             if (User != null && User.SystemType == Common.Const.SystemType.Restaurant)
             {

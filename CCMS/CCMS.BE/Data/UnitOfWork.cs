@@ -24,6 +24,9 @@ public class UnitOfWork : IUnitOfWork
     public IBranchPhoneRepository BranchPhone { get; private set; }
     public ICustomerRepository Customer { get; private set; }
     public IMenuItemRepository MenuItem { get; private set; }
+
+    public IBaseRepository<AppSetting> AppSetting { get; private set; }
+
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
@@ -31,7 +34,7 @@ public class UnitOfWork : IUnitOfWork
         Order=new OrderRepository(_context);
         MenuItemOrder = new BaseRepository<MenuItemOrder>(context);
         BranchUser = new BaseRepository<BranchUser>(context);
-
+        AppSetting = new BaseRepository<AppSetting>(context);
         Update = new BaseRepository<Update>(context);
         UpdateOrder = new BaseRepository<UpdateOrder>(context);
         Restaurant = new RestaurantRepository(context);

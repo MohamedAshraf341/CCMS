@@ -1,11 +1,11 @@
-﻿using CCMS.Common.Models;
+﻿using CCMS.Common.Dto;
 using System;
 
 namespace CCMS.Common.Const;
 
 public class Users
 {
-    public static readonly User SuperAdmin=new User 
+    public static readonly SeedUser SuperAdmin=new SeedUser 
     { 
         Id = "0ab5ce5b-19ac-4dca-8866-6f202e6a61bc",
         Name="Super Admin",
@@ -13,7 +13,7 @@ public class Users
         Password= "SuperAdmin@2024" ,
         ConfirmEmail=true
     };
-    public static readonly User SystemAdmin = new User
+    public static readonly SeedUser SystemAdmin = new SeedUser
     {
         ConfirmEmail = true,
         Id = "21747b4e-4683-474a-aa97-a7c7602d021e",
@@ -22,7 +22,7 @@ public class Users
         Password = "SystemAdmin@2024",
         SystemType=SystemType.System,
     };
-    public static readonly User SystemUser = new User 
+    public static readonly SeedUser SystemUser = new SeedUser 
     {
         ConfirmEmail = true,
         Id ="231d3062-5c8d-4708-872c-0d8cf880fec4",
@@ -31,7 +31,7 @@ public class Users
         Password = "SystemUser@2024",
         SystemType = SystemType.System,
     };
-    public static readonly User RestaurantAdmin = new User
+    public static readonly SeedUser RestaurantAdmin = new SeedUser
     {
         ConfirmEmail = true,
         Id = "10ac74c8-6333-4096-af94-ec84f4892120",
@@ -40,7 +40,7 @@ public class Users
         Password = "RestaurantAdmin@2024",
         SystemType = SystemType.Restaurant,
     };
-    public static readonly User RestaurantUser = new User
+    public static readonly SeedUser RestaurantUser = new SeedUser
     {
         ConfirmEmail = true,
         Id = "9f57b2b4-533f-4e86-9e4c-02de2da926a3",

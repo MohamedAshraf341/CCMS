@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CCMS.BE.Data.Models;
+using CCMS.Common.Dto;
 
 namespace CCMS.BE.Profiles
 {
@@ -6,6 +8,8 @@ namespace CCMS.BE.Profiles
     {
         public AutoMapperProfile() 
         {
+            CreateMap<AppSetting, AppSettingDto>();
+
         }
     }
 }

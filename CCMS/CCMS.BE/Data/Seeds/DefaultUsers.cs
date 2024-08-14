@@ -2,12 +2,9 @@
 using CCMS.BE.Interfaces;
 using CCMS.Common.Const;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+
 using System.Threading.Tasks;
 
 namespace CCMS.BE.Data.Seeds
@@ -126,7 +123,12 @@ namespace CCMS.BE.Data.Seeds
                     Log.Information("Branch user 2 created.");
                 }
 
-
+                var checkDarkMode = await uow.AppSetting.GetByIdAsync(Common.Const.AppSetting.DarkMode.Id);
+                if (checkDarkMode == null)
+                {
+                    var darkMode = new Models.AppSetting {Id=Common.Const.AppSetting.DarkMode.Id,Key= Common.Const.AppSetting.DarkMode.Key };
+                    await uow.AppSetting.AddAsync(darkMode);
+                }
                 var res = await uow.CompleteAsync();
                 Log.Information("Transaction completed successfully.");
             }

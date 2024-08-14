@@ -13,6 +13,7 @@ public interface IUnitOfWork : IDisposable
     IBaseRepository<Update> Update { get; }
     IBaseRepository<UpdateOrder> UpdateOrder { get; }
     IBaseRepository<BranchUser> BranchUser { get; }
+    IBaseRepository<AppSetting> AppSetting { get; }
 
     IRestaurantRepository Restaurant { get; }
     IBrancheRepository Branche { get; }

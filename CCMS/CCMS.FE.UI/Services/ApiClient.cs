@@ -26,6 +26,7 @@ namespace CCMS.FE.UI.Services
         public ApiClient_Order Order { get => Get<ApiClient_Order>(); }
         public ApiClient_Client Client { get => Get<ApiClient_Client>(); }
         public ApiClient_MenuItem MenuItem { get => Get<ApiClient_MenuItem>(); }
+        public ApiClient_AppSetting AppSetting { get => Get<ApiClient_AppSetting>(); }
 
 
         public ApiClient(IOptions<AppSettings> _appSettings, AuthenticationService _authService)

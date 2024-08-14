@@ -76,5 +76,9 @@
             public const string DeleteClient = Prefix + "/DeleteClient";
 
         }
+        public static class AppSetting
+        {
+            public const string Prefix = "AppSetting";
+        }
     }
 }

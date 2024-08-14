@@ -21,6 +21,7 @@ namespace CCMS.BE.Data
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Update> Updates { get; set; }
         public DbSet<UpdateOrder> UpdateOrders { get; set; }
+        public DbSet<AppSetting> AppSettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
