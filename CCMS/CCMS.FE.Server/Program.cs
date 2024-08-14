@@ -5,34 +5,45 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.IO;
+using System.Reflection;
 
 
 namespace CCMS.FE.Server
 {
     public class Program
     {
+        public static string EnvironmentName => Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+
+        private static Action<IConfigurationBuilder> BuildConfiguration =
+                builder => builder
+                    //.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                    .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{EnvironmentName}.json", optional: true)
+                    .AddEnvironmentVariables();
         public static void Main(string[] args)
         {
 
-            var builder =
-                new ConfigurationBuilder()
-                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables();
+            Log.Information($"Starting Server (Env : {EnvironmentName}) ...");
 
-            Log.Logger =
-                new Serilog.LoggerConfiguration()
-                .ReadFrom.Configuration(builder.Build())
-                .CreateLogger();
+            var builder = new ConfigurationBuilder();
+            BuildConfiguration(builder);
 
+
+            Serilog.Log.Logger =
+                    new Serilog.LoggerConfiguration()
+                    .ReadFrom.Configuration(builder.Build())
+                    .CreateLogger();
 
             try
             {
                 Log.Information("Creating host builder ...");
-                var hostBuilder = CreateHostBuilder(args);
+                var hostBuilder = CreateHostBuilder(args, builder);
 
                 Log.Information("Building host ...");
                 var host = hostBuilder.Build();
+
+
 
                 Log.Information("Running host ...");
                 host.Run();
@@ -40,7 +51,7 @@ namespace CCMS.FE.Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unhandled exception : {ex}");
+                Log.Error($"Unhandled exception : {ex}");
                 Serilog.Log.Fatal(ex, "Host terminated unexpectedly.");
             }
             finally
@@ -49,12 +60,28 @@ namespace CCMS.FE.Server
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+           public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationBuilder configurationBuilder)
+        {
+            var host = Host
+                .CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                        .ConfigureKestrel(serverOptions =>
+                        {
+                        })
+                        .UseConfiguration(
+                            configurationBuilder
+                            .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
+                            .AddJsonFile($"hosting.{EnvironmentName}.json", optional: true)
+                            .Build()
+                        )
+                        .UseStartup<Startup>();
                 });
+
+            return host;
+        }
     }
 
 }

@@ -10,6 +10,8 @@ using CCMS.FE.UI.Theme;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using MudBlazor.ThemeManager;
 using Serilog;
@@ -18,12 +20,16 @@ namespace CCMS.FE.UI.Shared
 {
     public partial class MainLayout : IDisposable, IAsyncDisposable
     {
+        private readonly string backendUrl;
+
         private HubConnection hubConnection;
         [Inject] IDialogService DialogService { get; set; }
         [Inject] Services.NotficationServices Notfication { get; set; }
         [Inject] NavigationManager NavigationManager { get; set; }
         [Inject] AuthenticationService AuthenticationService { get; set; }
         [Inject] ApiClient? ApiClient { get; set; }
+        [Inject] IOptions<AppSettings> AppSettings { get; set; } // Inject IOptions<AppSettings>
+
         private IEnumerable<OrderDto> OrderElements = new List<OrderDto>();
         private Common.Dto.Response.Auth.GetToken User = new Common.Dto.Response.Auth.GetToken();
         private int CountOrder;
@@ -35,7 +41,14 @@ namespace CCMS.FE.UI.Shared
 
         public bool _drawerOpen = true;
         public bool _themeManagerOpen = false;
-
+        public MainLayout()
+        {
+            backendUrl = AppSettings?.Value?.BackendUrl;
+            if (string.IsNullOrEmpty(backendUrl))
+            {
+                Log.Error("MainLayout.MainLayout BackendUrl not defined in AppSettings.");
+            }
+        }
         void DrawerToggle()
         {
             _drawerOpen = !_drawerOpen;
@@ -78,7 +91,7 @@ namespace CCMS.FE.UI.Shared
             {
                 await LoadItems();
                 hubConnection = new HubConnectionBuilder()
-                    .WithUrl("https://localhost:5000/orderHub") // Backend URL
+                    .WithUrl($"{backendUrl}orderHub") // Backend URL
                     .Build();
 
                 hubConnection.On("ReceiveOrderUpdate", async () =>

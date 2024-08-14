@@ -30,7 +30,7 @@ namespace CCMS.BE
         public static void Main(string[] args)
         {
 
-            Console.WriteLine($"Starting Server (Env : {EnvironmentName}) ...");
+            Log.Information($"Starting Server (Env : {EnvironmentName}) ...");
 
             var builder = new ConfigurationBuilder();
             BuildConfiguration(builder);
@@ -43,21 +43,21 @@ namespace CCMS.BE
 
             try
             {
-                Console.WriteLine("Creating host builder ...");
+                Log.Information("Creating host builder ...");
                 var hostBuilder = CreateHostBuilder(args, builder);
 
-                Console.WriteLine("Building host ...");
+                Log.Information("Building host ...");
                 var host = hostBuilder.Build();
 
 
 
-                Console.WriteLine("Running host ...");
+                Log.Information("Running host ...");
                 host.Run();
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unhandled exception : {ex}");
+                Log.Error($"Unhandled exception : {ex}");
                 Serilog.Log.Fatal(ex, "Host terminated unexpectedly.");
             }
             finally

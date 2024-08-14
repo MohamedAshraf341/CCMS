@@ -41,7 +41,7 @@ namespace CCMS.FE.UI.Services
         void updateClientAuthHeader()
         {
             if (client == null)
-                client = new HttpClient { BaseAddress = new Uri(backendUrl) };
+                client = new HttpClient { BaseAddress = new Uri(backendUrl+"api/") };
 
             var user = authService.GetUser();
 

@@ -132,15 +132,15 @@ namespace CCMS.BE
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, IUnitOfWork uow)
         {
             app.ApplyMigrations();
-
+            // Seed default users
+            SeedData(userManager, uow).Wait();
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BE v1"));
-                // Seed default users
-                SeedData(userManager, uow).Wait();
+                
             }
             app.UseRouting();
             app.UseCors("AllowAll");
