@@ -33,7 +33,7 @@ namespace CCMS.FE.UI.Shared
         private IEnumerable<OrderDto> OrderElements = new List<OrderDto>();
         private Common.Dto.Response.Auth.GetToken User = new Common.Dto.Response.Auth.GetToken();
         private int CountOrder;
-        Common.Dto.AppSettingDto DarkModeItem {  get; set; } 
+        Common.Dto.UserSettingDto DarkModeItem {  get; set; } 
         private bool _isDarkMode {  get; set; }
 
         private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
@@ -62,8 +62,19 @@ namespace CCMS.FE.UI.Shared
         private async Task ToggleDarkMode()
         {
             _isDarkMode = !_isDarkMode;
-            AppSettingHelper.SetValue(DarkModeItem, _isDarkMode);
-            await ApiClient.AppSetting.Edit(DarkModeItem);
+            if(DarkModeItem == null)
+            {
+                DarkModeItem = new UserSettingDto { Key = Common.Enums.Settings.DarkMode.ToString(), UserId=User.Id,};
+                UserSettingHelper.SetValue(DarkModeItem, _isDarkMode);
+                await ApiClient.UserSetting.Add(DarkModeItem);
+
+            }
+            else
+            {
+                UserSettingHelper.SetValue(DarkModeItem, _isDarkMode);
+                await ApiClient.UserSetting.Edit(DarkModeItem);
+
+            }
         }
 
         void UpdateTheme(ThemeManagerTheme value)
@@ -75,18 +86,21 @@ namespace CCMS.FE.UI.Shared
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            var darkMode = await ApiClient.AppSetting.GetById(Common.Const.AppSetting.DarkMode.Id);
+            User = AuthenticationService.GetUser();
+
+            var darkMode = await ApiClient.UserSetting.GetByUserAndKey(new Common.Dto.Request.UserSetting.GetByUserAndKey { Key = Common.Enums.Settings.DarkMode.ToString(), UserId = User.Id });
+            DarkModeItem = darkMode;
             if (darkMode != null )
             {
-                DarkModeItem=darkMode;
-                if(AppSettingHelper.GetValue<bool>(darkMode))
+               
+                var valueDarkMode = UserSettingHelper.GetValue<bool>(darkMode);
+                if (valueDarkMode)
                     _isDarkMode = true;
                 else
                     _isDarkMode = false;
             }
             else
                 _isDarkMode = false;
-            User = AuthenticationService.GetUser();
             if (User != null && User.SystemType == Common.Const.SystemType.Restaurant)
             {
                 await LoadItems();
@@ -189,7 +203,6 @@ namespace CCMS.FE.UI.Shared
                 }
             }
         }
-
 
         public async ValueTask DisposeAsync()
         {

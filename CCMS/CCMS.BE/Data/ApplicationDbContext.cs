@@ -23,6 +23,7 @@ namespace CCMS.BE.Data
         public DbSet<UpdateOrder> UpdateOrders { get; set; }
         public DbSet<AppSetting> AppSettings { get; set; }
 
+        public DbSet<UserSetting> UserSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

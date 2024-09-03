@@ -26,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
     public IMenuItemRepository MenuItem { get; private set; }
 
     public IBaseRepository<AppSetting> AppSetting { get; private set; }
+    public IUserSettingRepository UserSetting { get; private set; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -42,6 +43,7 @@ public class UnitOfWork : IUnitOfWork
         BranchPhone = new BranchPhoneRepository(context);
         Customer = new CustomerRepository(context);
         MenuItem = new MenuItemRepository(context);
+        UserSetting = new UserSettingRepository(context);
     }
 
 

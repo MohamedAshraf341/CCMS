@@ -1,4 +1,5 @@
-﻿using CCMS.BE.Data.Models;
+﻿using AutoMapper;
+using CCMS.BE.Data.Models;
 using CCMS.BE.Interfaces;
 using CCMS.BE.Settings;
 using CCMS.Common.Const;
@@ -38,12 +39,14 @@ public class ManagementUsersService : IManagementUsersService
     private readonly IMailingService _mailingService;
     private readonly JwtSettings _jwt;
     private readonly IUnitOfWork _uow;
+    private readonly IMapper _mapper;
     public ManagementUsersService(IMailingService mailingService,
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager, IOptions<JwtSettings> jwt,
         IHttpContextAccessor httpContextAccessor,
         IUnitOfWork uow,
-         IUrlHelperFactory urlHelperFactory)
+         IUrlHelperFactory urlHelperFactory,
+         IMapper mapper)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -52,6 +55,7 @@ public class ManagementUsersService : IManagementUsersService
         _httpContextAccessor = httpContextAccessor;
         _uow = uow;
         _urlHelperFactory = urlHelperFactory;
+        _mapper = mapper;
     }
     public async Task<AddUserResponse?> AddUserAsync(AddUser model)
     {
@@ -96,7 +100,14 @@ public class ManagementUsersService : IManagementUsersService
             //var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext());
 
             //var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { user.Id, newToken }, requestScheme);
-
+            var darkModeSettingDto=new UserSettingDto { Key= Common.Enums.Settings.DarkMode.ToString() ,UserId=user.Id };
+            Common.Helpers.UserSettingHelper.SetValue<bool>(darkModeSettingDto, false);
+            var languageSettingDto = new UserSettingDto { Key = Common.Enums.Settings.Language.ToString(), UserId = user.Id };
+            Common.Helpers.UserSettingHelper.SetValue<string>(languageSettingDto, LanguageCodeExtensions.ToCultureString(Common.Enums.LanguageCode.English_US));
+            var darkModeSetting = _mapper.Map<UserSetting>(darkModeSettingDto);
+            var languageSetting = _mapper.Map<UserSetting>(languageSettingDto);
+            await _uow.UserSetting.AddAsync(darkModeSetting);
+            await _uow.UserSetting.AddAsync(languageSetting);
             var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\WelcomeTemplate.html";
             var str = new StreamReader(filePath);
 
@@ -201,8 +212,8 @@ public class ManagementUsersService : IManagementUsersService
                 authModel.RefreshToken = refreshToken.Token;
                 authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
                 user.RefreshTokens.Add(refreshToken);
-                await _userManager.UpdateAsync(user);
                 var res = await _uow.CompleteAsync();
+                await _userManager.UpdateAsync(user);
 
             }
 

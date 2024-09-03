@@ -80,7 +80,7 @@ namespace CCMS.BE
             services.AddHttpContextAccessor();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(typeof(Startup)); // Register AutoMapper with the assembly
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll",

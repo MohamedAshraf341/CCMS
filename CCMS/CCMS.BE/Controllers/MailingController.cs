@@ -1,5 +1,6 @@
 ﻿using CCMS.BE.Interfaces;
 using CCMS.Common.Dto.Request.Mail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;

@@ -80,5 +80,12 @@
         {
             public const string Prefix = "AppSetting";
         }
+        public static class UserSetting
+        {
+            public const string Prefix = "UserSetting";
+            public const string GetByUser = Prefix + "/GetByUser";
+            public const string GetByUserAndKey = Prefix + "/GetByUserAndKey";
+
+        }
     }
 }

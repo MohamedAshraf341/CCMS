@@ -9,6 +9,7 @@ namespace CCMS.BE.Profiles
         public AutoMapperProfile() 
         {
             CreateMap<AppSetting, AppSettingDto>();
+            CreateMap<UserSettingDto, UserSetting>().ReverseMap();
 
         }
     }

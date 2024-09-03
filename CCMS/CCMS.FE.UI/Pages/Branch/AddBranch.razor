@@ -54,7 +54,7 @@
                             @if (!RestaurantId.HasValue)
                             {
                                 <MudItem xs="12" md="6">
-                                    <MudSelect @bind-Value="Item.RestaurantId" Label="Restaurant" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                                    <MudSelect @bind-Value="Item.RestaurantId" Label="Restaurant" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
                                         @foreach (var restaurant in RestaurantElements)
                                         {
                                             <MudSelectItem Value="restaurant.Id">@restaurant.Name</MudSelectItem>
@@ -64,13 +64,13 @@
                             }
                             
                             <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="Item.Government" Label="Government" Variant="Variant.Outlined" />
+                                <MudTextField @bind-Value="Item.Government" Label="Government" Variant="Variant.Filled" />
                             </MudItem>
                             <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="Item.City" Label="City" Variant="Variant.Outlined" />
+                                <MudTextField @bind-Value="Item.City" Label="City" Variant="Variant.Filled" />
                             </MudItem>
                             <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="Item.Area" Label="Area" Variant="Variant.Outlined" />
+                                <MudTextField @bind-Value="Item.Area" Label="Area" Variant="Variant.Filled" />
                             </MudItem>
 
                         </MudGrid>
@@ -95,7 +95,7 @@
                     @foreach (var item in Item.Phones)
                     {
                         <MudItem xs="12" md="6">
-                            <MudTextField @bind-Value="item.PhoneNumber" Label="Phone Number" Variant="Variant.Outlined" />
+                            <MudTextField @bind-Value="item.PhoneNumber" Label="Phone Number" Variant="Variant.Filled" />
                         </MudItem>
                         <MudItem xs="12" md="6">
                             <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Class="mr-3"
@@ -126,10 +126,10 @@
                 <MudGrid>
 
                     <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="Item.AdminName" Label="Admin Name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="Item.AdminName" Label="Admin Name" Variant="Variant.Filled" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="Item.AdminEmail" Label="Admin Email" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="Item.AdminEmail" Label="Admin Email" Variant="Variant.Filled" />
                     </MudItem>
 
                 </MudGrid>

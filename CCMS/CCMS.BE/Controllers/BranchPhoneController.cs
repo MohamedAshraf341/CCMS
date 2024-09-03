@@ -3,6 +3,7 @@ using CCMS.Common.Const;
 using CCMS.Common.Dto;
 using CCMS.Common.Dto.Request;
 using CCMS.Common.Dto.Request.Phone;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +13,7 @@ namespace CCMS.BE.Controllers
 {
     [Route(Router.Root)]
     [ApiController]
+
     public class BranchPhoneController : ControllerBase
     {
         private readonly PhoneService _phoneService;

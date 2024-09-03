@@ -14,7 +14,7 @@
             <MudCardContent>
                 <MudGrid Class="mb-3">
                     <MudItem xs="12">
-                        <MudSelect T="Guid?" Label="Branch" Variant="Variant.Outlined" ValueChanged="OnValueChanged" Value="selectedBranchId">
+                        <MudSelect T="Guid?" Label="Branch" Variant="Variant.Filled" ValueChanged="OnValueChanged" Value="selectedBranchId">
                             @foreach (var item in BranchElements)
                             {
                                 <MudSelectItem T="Guid?" Value="item.Id">@item.Restaurant , @item.Address</MudSelectItem>
@@ -40,7 +40,7 @@
                                     @if (selectedItems.ContainsKey(item.Id))
                                     {
                                         <MudItem xs="3">
-                                            <MudNumericField Min="1" @bind-Value="@selectedItems[item.Id]" Label="Quantity" Variant="Variant.Outlined"></MudNumericField>
+                                            <MudNumericField Min="1" @bind-Value="@selectedItems[item.Id]" Label="Quantity" Variant="Variant.Filled"></MudNumericField>
                                         </MudItem>
                                         <MudItem xs="3">
                                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => OnCancelItem(item))">Cancel</MudButton>
@@ -70,16 +70,16 @@
                 <MudGrid>
 
                     <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="Item.CustomerName" Label="Name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="Item.CustomerName" Label="Name" Variant="Variant.Filled" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="Item.CustomerPhone" Label="Phone" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="Item.CustomerPhone" Label="Phone" Variant="Variant.Filled" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="Item.CustomerAddress" Label="Address" Variant="Variant.Outlined" Placeholder="Enter Address here..." Lines="5" />
+                        <MudTextField @bind-Value="Item.CustomerAddress" Label="Address" Variant="Variant.Filled" Placeholder="Enter Address here..." Lines="5" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="Item.Notes" Label="Notes" Variant="Variant.Outlined" Placeholder="Enter Client Notes here..." Lines="5" />
+                        <MudTextField @bind-Value="Item.Notes" Label="Notes" Variant="Variant.Filled" Placeholder="Enter Client Notes here..." Lines="5" />
                     </MudItem>
                 </MudGrid>
             </MudCardContent>

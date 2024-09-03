@@ -20,6 +20,8 @@ public interface IUnitOfWork : IDisposable
     IBranchPhoneRepository BranchPhone { get; }
     ICustomerRepository Customer { get; }
     IMenuItemRepository MenuItem { get; }
+    IUserSettingRepository UserSetting { get; }
+
     Task<int> CompleteAsync();
     Task<IDbContextTransaction> BeginTransactionAsync();
 
