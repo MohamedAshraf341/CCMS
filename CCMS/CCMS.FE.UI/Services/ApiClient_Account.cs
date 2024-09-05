@@ -23,9 +23,9 @@ namespace CCMS.FE.UI.Services
             var res = await ApiHttpClient.Post<RefreshToken,BaseResponse>(Router.Account.LogOut, model);
             return res;
         }
-        internal async Task<BaseResponse> RefreshToken(RefreshToken model)
+        internal async Task<GetToken> RefreshToken(RefreshToken model)
         {
-            var res = await ApiHttpClient.Post<RefreshToken,BaseResponse>(Router.Account.RefreshToken, model);
+            var res = await ApiHttpClient.Post<RefreshToken, GetToken>(Router.Account.RefreshToken, model);
             return res;
         }
         internal async Task<UsersDto> GetUserById(string id)

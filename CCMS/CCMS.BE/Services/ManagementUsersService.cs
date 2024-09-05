@@ -57,6 +57,161 @@ public class ManagementUsersService : IManagementUsersService
         _urlHelperFactory = urlHelperFactory;
         _mapper = mapper;
     }
+    public async Task<GetToken> LoginAsync(Login model)
+    {
+        try
+        {
+            var authModel = new GetToken();
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user is null)
+                return new GetToken { Success = false, Message = "Email is incorrect!" };
+            if (!await _userManager.CheckPasswordAsync(user, model.Password))
+                return new GetToken { Success = false, Message = "Password is incorrect!" };
+            //if(!await _userManager.IsEmailConfirmedAsync(user))
+            //    return new GetToken { Success = false, Message = "This Email Invalid." };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var jwtSecurityToken = await CreateJwtToken(user);
+
+            authModel.Message = "Login is successfuly";
+            authModel.Success = true;
+            authModel.IsAuthenticated = true;
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
+            authModel.Roles = roles.ToList();
+            authModel.Picture = user.Picture;
+            authModel.Name = user.Name;
+            authModel.Email = user.Email;
+            authModel.Id = user.Id;
+            authModel.SystemType = user.SystemType;
+            if (user.SystemType == Common.Const.SystemType.Restaurant)
+            {
+                var branch = await _uow.Branche.GetByUserId(user.Id);
+                authModel.BranchId = branch.Id;
+            }
+
+            if (user.RefreshTokens.Count == 0 || !user.RefreshTokens.Any(t => t.IsActive))
+            {
+                var refreshToken = GenerateRefreshToken();
+                authModel.RefreshToken = refreshToken.Token;
+                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+                await _uow.CompleteAsync();
+            }
+            else
+            {
+                var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+                authModel.RefreshToken = activeRefreshToken.Token;
+                authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+            }
+
+
+            return authModel;
+        }
+        catch (Exception ex)
+        {
+            return new GetToken { Success = false, Message = ex.Message };
+        }
+    }
+    public async Task<GetToken> RefreshTokenAsync(Common.Dto.Request.Auth.RefreshToken model)
+    {
+        try
+        {
+            var authModel = new GetToken();
+
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == model.Token));
+
+            if (user == null)
+                return new GetToken { Success = false, Message = "Invalid token" };
+            var roles = await _userManager.GetRolesAsync(user);
+
+
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == model.Token);
+
+            if (!refreshToken.IsActive)
+                return new GetToken { Success = false, Message = "Inactive token" };
+
+
+            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshTokens.Add(newRefreshToken);
+            await _userManager.UpdateAsync(user);
+            await _uow.CompleteAsync();
+            var jwtToken = await CreateJwtToken(user);
+            authModel.Roles = roles.ToList();
+
+            authModel.Id = user.Id;
+            authModel.Name = user.Name;
+            authModel.Email = user.Email;
+            authModel.Picture = user.Picture;
+            authModel.IsAuthenticated = true;
+            authModel.Success = true;
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            authModel.ExpiresOn= jwtToken.ValidTo;
+            authModel.RefreshToken = newRefreshToken.Token;
+            authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+            authModel.SystemType = user.SystemType;
+            if (user.SystemType == Common.Const.SystemType.Restaurant)
+            {
+                var branch = await _uow.Branche.GetByUserId(user.Id);
+                authModel.BranchId = branch.Id;
+            }
+            return authModel;
+        }
+        catch (Exception ex)
+        {
+            return new GetToken { Success = false, Message = ex.Message };
+        }
+    }
+    private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
+    {
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        var roleClaims = new List<Claim>();
+
+        foreach (var role in roles)
+            roleClaims.Add(new Claim("roles", role));
+
+        var claims = new[]
+        {
+                new Claim(JwtRegisteredClaimNames.Name, user.Name),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("uid", user.Id)
+            }
+        .Union(userClaims)
+        .Union(roleClaims);
+
+        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
+        var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+        var jwtSecurityToken = new JwtSecurityToken(
+        issuer: _jwt.Issuer,
+            audience: _jwt.Audience,
+        claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes),
+            signingCredentials: signingCredentials);
+
+        return jwtSecurityToken;
+    }
+    private Data.Models.RefreshToken GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+
+        using var generator = new RNGCryptoServiceProvider();
+
+        generator.GetBytes(randomNumber);
+
+        return new Data.Models.RefreshToken
+        {
+            Token = Convert.ToBase64String(randomNumber),
+            ExpiresOn = DateTime.UtcNow.AddDays(60),
+            CreatedOn = DateTime.UtcNow
+        };
+    }
     public async Task<AddUserResponse?> AddUserAsync(AddUser model)
     {
         try
@@ -157,158 +312,7 @@ public class ManagementUsersService : IManagementUsersService
         }
        
     }
-    public async Task<GetToken> LoginAsync(Login model)
-    {
-        try
-        {
-            var authModel = new GetToken();
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user is null)
-                return new GetToken {Success=false, Message = "Email is incorrect!" };
-            if(!await _userManager.CheckPasswordAsync(user, model.Password))
-                return new GetToken { Success = false, Message = "Password is incorrect!" };
-            //if(!await _userManager.IsEmailConfirmedAsync(user))
-            //    return new GetToken { Success = false, Message = "This Email Invalid." };
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var jwtSecurityToken = await CreateJwtToken(user);
-
-            authModel.Message = "Login is successfuly";
-            authModel.Success = true;
-            authModel.IsAuthenticated = true;
-            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
-            authModel.Roles = roles.ToList();
-            authModel.Picture=user.Picture;
-            authModel.Name=user.Name;
-            authModel.Email = user.Email;
-            authModel.Id= user.Id;
-            authModel.SystemType = user.SystemType;
-            if(user.SystemType == Common.Const.SystemType.Restaurant)
-            {
-                var branch = await _uow.Branche.GetByUserId(user.Id);
-                authModel.BranchId = branch.Id;
-            }
-            if(user.RefreshTokens.Count()==0)
-            {
-                var refreshToken = GenerateRefreshToken();
-                authModel.RefreshToken = refreshToken.Token;
-                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
-                user.RefreshTokens.Add(refreshToken);
-              
-                await _userManager.UpdateAsync(user);
-                var res = await _uow.CompleteAsync();
-            }
-            else if (user.RefreshTokens.Any(t => t.IsActive))
-            {
-                var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
-                authModel.RefreshToken = activeRefreshToken.Token;
-                authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
-            }
-            else
-            {
-                var refreshToken = GenerateRefreshToken();
-                authModel.RefreshToken = refreshToken.Token;
-                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
-                user.RefreshTokens.Add(refreshToken);
-                var res = await _uow.CompleteAsync();
-                await _userManager.UpdateAsync(user);
-
-            }
-
-
-            return authModel;
-        }
-        catch (Exception ex)
-        {
-            return new GetToken { Success = false, Message = ex.Message };
-        }
-    }
-    public async Task<GetToken> RefreshTokenAsync(Common.Dto.Request.Auth.RefreshToken model)
-    {
-        try
-        {
-            var authModel = new GetToken();
-
-            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == model.Token));
-
-            if (user == null)
-                return new GetToken {Success=false, Message = "Invalid token" };
-
-
-            var refreshToken = user.RefreshTokens.Single(t => t.Token == model.Token);
-
-            if (!refreshToken.IsActive)
-                return new GetToken { Success = false, Message = "Inactive token" };
-
-
-            refreshToken.RevokedOn = DateTime.UtcNow;
-
-            var newRefreshToken = GenerateRefreshToken();
-            user.RefreshTokens.Add(newRefreshToken);
-            await _userManager.UpdateAsync(user);
-            await _uow.CompleteAsync();
-            var jwtToken = await CreateJwtToken(user);
-            authModel.IsAuthenticated = true;
-            authModel.Success = true;
-            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-            authModel.RefreshToken = newRefreshToken.Token;
-            authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
-
-            return authModel;
-        }
-        catch (Exception ex) 
-        {
-            return new GetToken { Success = false,Message = ex.Message};
-        }
-    }
-    private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
-    {
-        var userClaims = await _userManager.GetClaimsAsync(user);
-        var roles = await _userManager.GetRolesAsync(user);
-        var roleClaims = new List<Claim>();
-
-        foreach (var role in roles)
-            roleClaims.Add(new Claim("roles", role));
-
-        var claims = new[]
-        {
-                new Claim(JwtRegisteredClaimNames.Name, user.Name),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
-            }
-        .Union(userClaims)
-        .Union(roleClaims);
-
-        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
-        var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-
-        var jwtSecurityToken = new JwtSecurityToken(
-        issuer: _jwt.Issuer,
-            audience: _jwt.Audience,
-        claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes),
-            signingCredentials: signingCredentials);
-
-        return jwtSecurityToken;
-    }
-    private Data.Models.RefreshToken GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-
-        using var generator = new RNGCryptoServiceProvider();
-
-        generator.GetBytes(randomNumber);
-
-        return new Data.Models.RefreshToken
-        {
-            Token = Convert.ToBase64String(randomNumber),
-            ExpiresOn = DateTime.UtcNow.AddDays(10),
-            CreatedOn = DateTime.UtcNow
-        };
-    }
     public async Task<BaseResponse> SendVerificationCodeAsync(SendCodeToEmail model)
     {
         try

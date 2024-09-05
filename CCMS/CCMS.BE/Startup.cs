@@ -86,10 +86,13 @@ namespace CCMS.BE
                 options.AddPolicy("AllowAll",
                     builder =>
                     {
-                        builder.WithOrigins("https://localhost:5002")
+                        builder.AllowAnyOrigin()
                                .AllowAnyMethod()
-                               .AllowAnyHeader()
-                               .AllowCredentials();
+                               .AllowAnyHeader();
+                        //builder.WithOrigins("https://localhost:5002")
+                        //       .AllowAnyMethod()
+                        //       .AllowAnyHeader()
+                        //       .AllowCredentials();
                     });
             });
             services.AddSwaggerGen(c =>

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CCMS.BE.Controllers
 {
+    [Authorize(Roles="Admin,SuperAdmin")]
     [Route(Router.Root)]
     [ApiController]
     public class AdminController : ControllerBase

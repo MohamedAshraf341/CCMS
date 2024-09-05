@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CCMS.BE.Controllers
 {
+    [Authorize]
     [Route(Router.Root)]
     [ApiController]
     public class BrancheController : ControllerBase

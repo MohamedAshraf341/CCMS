@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CCMS.BE.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MailingController : ControllerBase

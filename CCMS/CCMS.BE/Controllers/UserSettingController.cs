@@ -13,6 +13,7 @@ using models= CCMS.BE.Data.Models;
 
 namespace CCMS.BE.Controllers
 {
+    [Authorize]
     [Route(Router.Root)]
     [ApiController]
     public class UserSettingController : ControllerBase

@@ -1,5 +1,6 @@
 ﻿using CCMS.Common.Dto.Response.Auth;
 using CCMS.Common.Helpers;
+using CCMS.FE.UI.Extensions;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
@@ -9,26 +10,12 @@ namespace CCMS.FE.UI.Services
     public class AuthenticationService
     {
         private readonly IHttpContextAccessor httpContextAccessor;
-        private const string Key = "Rte2bR+DY77y9aEuAPenVVCLkPSN55rTGyA+swfhykA=";
-        private const string KeyIVBase64 = "MwND80W9V8urVLhK+iRKzQ==";
         private const string COOKIE_NAME = "AuthUser";
         public AuthenticationService(IHttpContextAccessor _httpContextAccessor)
         {
             httpContextAccessor = _httpContextAccessor;
         }
-        public string Encrypt(string input)
-        {
-            var symmetricEncryptDecrypt = new SymmetricEncryptDecrypt();
-            var encryptedText = symmetricEncryptDecrypt.Encrypt(input, KeyIVBase64, Key);
-            return encryptedText;
-        }
 
-        public string Decrypt(string encryptedText)
-        {
-            var symmetricEncryptDecrypt = new SymmetricEncryptDecrypt();
-            var decryptedText = symmetricEncryptDecrypt.Decrypt(encryptedText, KeyIVBase64, Key);
-            return decryptedText;
-        }
         public GetToken? GetUser()
         {
             try
@@ -37,7 +24,7 @@ namespace CCMS.FE.UI.Services
                 if (string.IsNullOrEmpty(cookieValue))
                     return null;
 
-                var userJs = Decrypt(cookieValue);
+                var userJs = EncryptionAndDecryption.Decrypt(cookieValue);
                 var user = Newtonsoft.Json.JsonConvert.DeserializeObject<GetToken>(userJs);
                 return user;
             }
@@ -53,7 +40,7 @@ namespace CCMS.FE.UI.Services
             try
             {
                 var userJs = Newtonsoft.Json.JsonConvert.SerializeObject(user);
-                var cookieValue = Encrypt(userJs);
+                var cookieValue = EncryptionAndDecryption.Encrypt(userJs);
 
                 httpContextAccessor.HttpContext.Response.Cookies.Append(COOKIE_NAME, cookieValue);
 
@@ -64,6 +51,11 @@ namespace CCMS.FE.UI.Services
                 Serilog.Log.Error($"AuthenticationService.SetUser :: Unhandled exception : {ex}");
             }
             return false;
+        }
+        public void DeleteUser()
+        {
+            httpContextAccessor.HttpContext.Response.Cookies.Delete(COOKIE_NAME);
+
         }
 
         public void Logout()

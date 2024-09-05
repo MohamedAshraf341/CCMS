@@ -2,13 +2,13 @@
     <DialogContent>
         <MudGrid>
             <MudItem xs="12">
-                <MudTextField @bind-Value="Item.Name" Label="Name" Variant="Variant.Text"></MudTextField>
+                <MudTextField @bind-Value="Item.Name" Label="Name" Variant="Variant.Filled"></MudTextField>
             </MudItem>
             <MudItem xs="12">
-                <MudTextField @bind-Value="Item.Email" Label="Email" Variant="Variant.Text"></MudTextField>
+                <MudTextField @bind-Value="Item.Email" Label="Email" Variant="Variant.Filled"></MudTextField>
             </MudItem>
             <MudItem xs="12">
-                <MudSelect @bind-Value="Item.Role" Label="Role" AnchorOrigin="Origin.BottomCenter">
+                <MudSelect @bind-Value="Item.Role" Label="Role" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Filled">
                     <MudSelectItem Value="@($"{Common.Const.Roles.User.Name}")" />
                     <MudSelectItem Value="@($"{Common.Const.Roles.Admin.Name}")" />
                 </MudSelect>

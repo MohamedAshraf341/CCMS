@@ -30,8 +30,6 @@
                     <MudTh><b>Email</b></MudTh>
                     @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
                     {
-                        @*  <MudTh><b>Restaurant</b></MudTh>
-                    <MudTh><b>Branch</b></MudTh> *@
                         <MudTh><b>System Type</b></MudTh>
                     }
                     <MudTh></MudTh>
@@ -56,8 +54,6 @@
 
                 @if (authService.UserHasOneOfRole(Common.Const.Roles.SuperAdmin.Name))
                 {
-                    @*                 <MudTd DataLabel="Restaurant">@GetHighlightedText(context.Restaurant)</MudTd>
-                <MudTd DataLabel="Branch">@GetHighlightedText(GetFormattedAddress(context.Area, context.City, context.Government))</MudTd> *@
                     <MudTd DataLabel="System Type">@GetHighlightedText(context.SystemType)</MudTd>
                 }
 

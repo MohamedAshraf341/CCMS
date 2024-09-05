@@ -20,16 +20,10 @@ namespace CCMS.BE.Controllers
         {
             _managementUsersService = managementUsersService;
         }
-        [HttpPost(Router.Account.ConfirmEmail)]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            var res = await _managementUsersService.ConfirmEmailAsync(userId, token);
-            return Ok(res);
-        }
         [HttpPost(Router.Account.LogIn)]
         public async Task<IActionResult> LogIn(Login model)
         {
-            var res=await _managementUsersService.LoginAsync(model);
+            var res = await _managementUsersService.LoginAsync(model);
             if (!string.IsNullOrEmpty(res.RefreshToken))
                 SetRefreshTokenInCookie(res.RefreshToken, res.RefreshTokenExpiration);
             return Ok(res);
@@ -37,7 +31,7 @@ namespace CCMS.BE.Controllers
         [HttpPost(Router.Account.RefreshToken)]
         public async Task<IActionResult> RefreshToken(RefreshToken model)
         {
-            model.Token = !string.IsNullOrEmpty(model.Token) ? model.Token:Request.Cookies["refreshToken"];
+            model.Token = !string.IsNullOrEmpty(model.Token) ? model.Token : Request.Cookies["refreshToken"];
             var result = await _managementUsersService.RefreshTokenAsync(model);
 
             if (!result.IsAuthenticated)
@@ -47,6 +41,13 @@ namespace CCMS.BE.Controllers
 
             return Ok(result);
         }
+        [HttpPost(Router.Account.ConfirmEmail)]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            var res = await _managementUsersService.ConfirmEmailAsync(userId, token);
+            return Ok(res);
+        }
+
         [HttpPost(Router.Account.SendVerificationCode)]
         public async Task<IActionResult> SendVerificationCode(SendCodeToEmail model)
         {
