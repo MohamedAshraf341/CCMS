@@ -5,97 +5,104 @@
 <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_themeManager.Theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
-
-<MudLayout>
-    <MudAppBar Elevation="4">
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" />
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.MdAndUp">
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.Xs">
-            <MudText Typo="Typo.h6" Class="ml-4">CCMS Dashboard</MudText>
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-            <MudText Typo="Typo.subtitle2">Admin Dashboard</MudText>
-        </MudHidden>
-        <MudSpacer />
-        <!-- Dark Mode Switch -->
-        <MudSwitch Label="Dark Mode" @bind-Checked="@_isDarkMode" Color="Color.Primary" @onclick="@(() => ToggleDarkMode())" />
-
-        @if (User != null && User.SystemType==Common.Const.SystemType.Restaurant && AuthenticationService.UserHasOneOfRole(Common.Const.Roles.User.Name))
-        {
-            @if (OrderElements != null && OrderElements.Count()>0)
+<MudRTLProvider RightToLeft="@_isRTL" >
+    <MudLayout>
+        <MudAppBar Elevation="4">
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" />
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.Xs">
+                <MudText Typo="Typo.h6" Class="ml-4">CCMS Dashboard</MudText>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                <MudText Typo="Typo.subtitle2">Admin Dashboard</MudText>
+            </MudHidden>
+            <MudSpacer />
+            <!-- Dark Mode Switch -->
+            <MudSwitch Label="@DarkModeText" @bind-Checked="@_isDarkMode" Color="Color.Primary" @onclick="@(() => ToggleDarkMode())" />
+            <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense="true">
+                <MudMenuItem @onclick="@(() => SetEnglishLang())">English</MudMenuItem>
+                <MudMenuItem @onclick="@(() => SetArabicLang())">Arabic</MudMenuItem>
+            </MudMenu>
+            @if (User != null && User.SystemType == Common.Const.SystemType.Restaurant && AuthenticationService.UserHasOneOfRole(Common.Const.Roles.User.Name))
             {
-                <MudBadge Dot="false" Content="@CountOrder" Color="Color.Error" Class="mt-5 mr-3">
+                @if (OrderElements != null && OrderElements.Count() > 0)
+                {
+                    <MudBadge Dot="false" Content="@CountOrder" Color="Color.Error" Class="mt-5 mr-3">
+                        <MudMenu Dense="true">
+                            <ActivatorContent>
+                                <MudAvatar Image="/images/notification.jpg" />
+                            </ActivatorContent>
+                            <ChildContent>
+                                @foreach (var item in OrderElements)
+                                {
+                                    <MudMenuItem OnClick="(() => OnOrderDetails(item))">
+
+                                        <MudGrid>
+                                            <MudItem xs="12">@item.CustomerName</MudItem>
+                                        </MudGrid>
+                                    </MudMenuItem>
+                                }
+                            </ChildContent>
+                        </MudMenu>
+                    </MudBadge>
+                }
+                else
+                {
                     <MudMenu Dense="true">
                         <ActivatorContent>
                             <MudAvatar Image="/images/notification.jpg" />
                         </ActivatorContent>
                         <ChildContent>
-                            @foreach (var item in OrderElements)
-                            {
-                                <MudMenuItem OnClick="(() => OnOrderDetails(item))">
-
-                                    <MudGrid>
-                                        <MudItem xs="12">@item.CustomerName</MudItem>
-                                       @*  <MudItem xs="3">
-                                            <MudButton Variant="Variant.Filled" Color="Color.Success">Confirm</MudButton>
-                                        </MudItem> *@
-                                    </MudGrid>
-                                </MudMenuItem>
-                            }
-                            
                         </ChildContent>
-
                     </MudMenu>
-                </MudBadge>
-            }
-            else
-            {
-                <MudMenu Dense="true">
-                    <ActivatorContent>
-                        <MudAvatar Image="/images/notification.jpg" />
-                    </ActivatorContent>
-                    <ChildContent>
-                    </ChildContent>
-                </MudMenu>
+                }
+
             }
 
-        }
 
-       
 
-        <MudMenu  Dense="true" Class="mt-1 ml-4">
-            <ActivatorContent>
-                <MudAvatar Image="/images/default-user.jpg" />
-            </ActivatorContent>
-            <ChildContent>
-                <PersonCard Class="mt-n2" />
-                <MudDivider Class="mb-2" />
-                <MudListItem Text="Account" Icon="@Icons.Material.Filled.Person" Href="/Account" />
-                <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Login" OnClick="@OnClickLogout" />
+            <MudMenu Dense="true" Class="mt-1 ml-4">
+                <ActivatorContent>
+                    @if (User.Picture==null)
+                    {
+                        <MudAvatar Image="/images/default-user.jpg" />
+                    }
+                    else
+                    {
+                        <MudAvatar Image="@($"data:image/png;base64,{Convert.ToBase64String(User.Picture)}")" />
+                    }
+                </ActivatorContent>
+                <ChildContent>
+                    <PersonCard Class="mt-n2" />
+                    <MudDivider Class="mb-2" />
+                    <MudListItem Text="Account" Icon="@Icons.Material.Filled.Person" Href="/Account" />
+                    <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Login" OnClick="@OnClickLogout" />
 
-            </ChildContent>
-        </MudMenu>
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="25" ClipMode="_themeManager.DrawerClipMode">
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent>
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudToolBar DisableGutters="true">
-                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
-@*                 <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
- *@            </MudToolBar>
-        </MudHidden>
-        <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
-@* <MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
-<MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" /> *@
+                </ChildContent>
+            </MudMenu>
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="25" ClipMode="_themeManager.DrawerClipMode">
+            <NavMenu />
+        </MudDrawer>
+        <MudMainContent>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudToolBar DisableGutters="true">
+                    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
+                    @*                 <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+                    *@
+                </MudToolBar>
+            </MudHidden>
+            <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+
+</MudRTLProvider>
+
 
 

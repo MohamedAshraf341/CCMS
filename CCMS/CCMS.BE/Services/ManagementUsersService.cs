@@ -10,12 +10,14 @@ using CCMS.Common.Dto.Response;
 using CCMS.Common.Dto.Response.Auth;
 using CCMS.Common.Dto.Response.User;
 using CCMS.Common.Helpers;
+using CCMS.Common.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -40,13 +42,15 @@ public class ManagementUsersService : IManagementUsersService
     private readonly JwtSettings _jwt;
     private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
+    private readonly IStringLocalizer<SharedResources> _sharedResources;
     public ManagementUsersService(IMailingService mailingService,
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager, IOptions<JwtSettings> jwt,
         IHttpContextAccessor httpContextAccessor,
         IUnitOfWork uow,
          IUrlHelperFactory urlHelperFactory,
-         IMapper mapper)
+         IMapper mapper,
+         IStringLocalizer<SharedResources> sharedResources)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -56,6 +60,7 @@ public class ManagementUsersService : IManagementUsersService
         _uow = uow;
         _urlHelperFactory = urlHelperFactory;
         _mapper = mapper;
+        _sharedResources = sharedResources;
     }
     public async Task<GetToken> LoginAsync(Login model)
     {
@@ -65,16 +70,16 @@ public class ManagementUsersService : IManagementUsersService
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user is null)
-                return new GetToken { Success = false, Message = "Email is incorrect!" };
+                return new GetToken { Success = false, Message = _sharedResources[Common.Keys.Api.Account.EmailIsIncorrect] };
             if (!await _userManager.CheckPasswordAsync(user, model.Password))
-                return new GetToken { Success = false, Message = "Password is incorrect!" };
+                return new GetToken { Success = false, Message = _sharedResources[Common.Keys.Api.Account.PasswordIsIncorrect] };
             //if(!await _userManager.IsEmailConfirmedAsync(user))
             //    return new GetToken { Success = false, Message = "This Email Invalid." };
 
             var roles = await _userManager.GetRolesAsync(user);
             var jwtSecurityToken = await CreateJwtToken(user);
 
-            authModel.Message = "Login is successfuly";
+            authModel.Message = _sharedResources[Common.Keys.Api.Account.LogInSuccessfully];
             authModel.Success = true;
             authModel.IsAuthenticated = true;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -124,14 +129,14 @@ public class ManagementUsersService : IManagementUsersService
             var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == model.Token));
 
             if (user == null)
-                return new GetToken { Success = false, Message = "Invalid token" };
+                return new GetToken { Success = false, Message = _sharedResources[Common.Keys.Api.Account.InvalidToken] };
             var roles = await _userManager.GetRolesAsync(user);
 
 
             var refreshToken = user.RefreshTokens.Single(t => t.Token == model.Token);
 
             if (!refreshToken.IsActive)
-                return new GetToken { Success = false, Message = "Inactive token" };
+                return new GetToken { Success = false, Message = _sharedResources[Common.Keys.Api.Account.InactiveToken] };
 
 
             refreshToken.RevokedOn = DateTime.UtcNow;
@@ -229,20 +234,20 @@ public class ManagementUsersService : IManagementUsersService
             var passwordUser = PasswordGenerator.GeneratePassword();
             var result = await _userManager.CreateAsync(user, passwordUser);
             if (!result.Succeeded)
-                return new AddUserResponse { Success=false,Message= "There is a problem with the email or password." };
+                return new AddUserResponse { Success=false,Message= _sharedResources[Common.Keys.Api.Account.FailedAddUser] };
             var roleExists = await _roleManager.RoleExistsAsync(model.Role);
             if (!roleExists)
-                return new AddUserResponse {Success=false,Message= "Succeeded in adding the user, but this role does not exist." };
+                return new AddUserResponse { Success = false, Message = _sharedResources[Common.Keys.Api.Account.SuccessAddUserFailedAddRole] };
             var addtoRole = await _userManager.AddToRoleAsync(user, model.Role);
             if (!addtoRole.Succeeded)
-                return new AddUserResponse {Success=false,Message= "Succeeded in adding the user, but failed succeeded in adding role." };
+                return new AddUserResponse { Success = false, Message = _sharedResources[Common.Keys.Api.Account.SuccessAddUserFailedAddRole] };
             var jwtSecurityToken = await CreateJwtToken(user);
 
             var response = new AddUserResponse
             {
                 UserId=user.Id,
                 Success=true,
-                Message= "User added successfully",
+                Message= _sharedResources[Common.Keys.Api.Account.SuccessAddUser],
                 Email = model.Email,
                 Name = model.Name,
                 Password= passwordUser,

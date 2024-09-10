@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using CCMS.Common.Dto.Response.Auth;
+using CCMS.FE.UI.Services;
 
-namespace CCMS.FE.UI.Services
+namespace CCMS.FE.UI.Middleware
 {
     public class BlazorCookieLoginMiddleware
     {

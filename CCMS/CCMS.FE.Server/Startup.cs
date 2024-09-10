@@ -2,12 +2,16 @@
 using CCMS.FE.UI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using Serilog;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace CCMS.FE.Server
 {
@@ -33,6 +37,24 @@ namespace CCMS.FE.Server
                 services.AddMudServices();
                 services.AddServices();
                 services.AddHttpContextAccessor();
+                services.AddControllersWithViews();
+                services.AddLocalization(opt =>
+                {
+                    opt.ResourcesPath = "";
+                });
+
+                services.Configure<RequestLocalizationOptions>(options =>
+                {
+                    List<CultureInfo> supportedCultures = new List<CultureInfo>
+        {
+            new CultureInfo("en-US"),
+            new CultureInfo("ar-EG")
+        };
+
+                    options.DefaultRequestCulture = new RequestCulture("en-US");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+                });
 
             }
             catch (Exception ex)
@@ -62,6 +84,8 @@ namespace CCMS.FE.Server
                 app.UseStaticFiles();
 
                 app.UseRouting();
+                var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+                app.UseRequestLocalization(options.Value);
                 ServicesExtensions.Configure(app);
 
 

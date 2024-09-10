@@ -13,7 +13,6 @@ using models= CCMS.BE.Data.Models;
 
 namespace CCMS.BE.Controllers
 {
-    [Authorize]
     [Route(Router.Root)]
     [ApiController]
     public class UserSettingController : ControllerBase
@@ -27,6 +26,7 @@ namespace CCMS.BE.Controllers
             _uow = uow;
             _mapper = mapper;
         }
+        [Authorize]
         [HttpGet(Router.UserSetting.GetByUser+"/{userId}")]
         public async Task<IActionResult> GetByUser(string userId)
         {
@@ -41,6 +41,7 @@ namespace CCMS.BE.Controllers
             var dalItems = _mapper.Map<dto.UserSettingDto>(items);
             return Ok(dalItems);
         }
+        [Authorize]
         [HttpGet(Router.UserSetting.Prefix)]
         public async Task<IActionResult> GetAll()
         {
@@ -48,6 +49,7 @@ namespace CCMS.BE.Controllers
             var dalItems = _mapper.Map<IEnumerable<dto.UserSettingDto>>(items);
             return Ok(dalItems);
         }
+        [Authorize]
         [HttpGet(Router.UserSetting.Prefix+"/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -55,6 +57,7 @@ namespace CCMS.BE.Controllers
             var dalItems = _mapper.Map<dto.UserSettingDto>(items);
             return Ok(dalItems);
         }
+        [Authorize]
         [HttpPost(Router.UserSetting.Prefix)] 
         public async Task<IActionResult> Add(dto.UserSettingDto dto)
         {
@@ -65,6 +68,7 @@ namespace CCMS.BE.Controllers
                 return Ok(true);
             return Ok(false);
         }
+        [Authorize]
         [HttpPut(Router.UserSetting.Prefix)]
         public async Task<IActionResult> Edit(dto.UserSettingDto dto)
         {
@@ -75,6 +79,7 @@ namespace CCMS.BE.Controllers
                 return Ok(true);
             return Ok(false);
         }
+        [Authorize]
         [HttpDelete(Router.UserSetting.Prefix + "/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

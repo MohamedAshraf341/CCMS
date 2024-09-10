@@ -21,6 +21,8 @@ using Microsoft.Extensions.Options;
 using CCMS.BE.Data.Seeds;
 using System.Threading.Tasks;
 using CCMS.BE.Hubs;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace CCMS.BE
 {
@@ -129,6 +131,25 @@ namespace CCMS.BE
             });
             services.AddSignalR();
             services.AddServices();
+            services.AddControllersWithViews();
+            services.AddLocalization(opt =>
+            {
+                opt.ResourcesPath = "";
+            });
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                List<CultureInfo> supportedCultures = new List<CultureInfo>
+        {
+            new CultureInfo("en-US"),
+            new CultureInfo("ar-EG")
+        };
+
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
+
 
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -137,6 +158,9 @@ namespace CCMS.BE
             app.ApplyMigrations();
             // Seed default users
             SeedData(userManager, uow).Wait();
+            var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(options.Value);
+
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
             {

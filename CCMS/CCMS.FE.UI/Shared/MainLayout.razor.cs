@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CCMS.Common.Dto;
 using CCMS.Common.Dto.Request.Auth;
+using CCMS.Common.Enums;
 using CCMS.Common.Helpers;
 using CCMS.FE.UI.Services;
 using CCMS.FE.UI.Theme;
@@ -33,8 +34,13 @@ namespace CCMS.FE.UI.Shared
         private IEnumerable<OrderDto> OrderElements = new List<OrderDto>();
         private Common.Dto.Response.Auth.GetToken User = new Common.Dto.Response.Auth.GetToken();
         private int CountOrder;
-        Common.Dto.UserSettingDto DarkModeItem {  get; set; } 
+        Common.Dto.UserSettingDto DarkModeItem {  get; set; }
+        Common.Dto.UserSettingDto LangItem { get; set; }
+
         private bool _isDarkMode {  get; set; }
+        private string DarkModeText { get; set; }
+        private bool _isRTL { get; set; }
+
 
         private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
         private List<BreadcrumbItem> _items = new List<BreadcrumbItem> { new BreadcrumbItem("Home", href: "/") };
@@ -62,18 +68,86 @@ namespace CCMS.FE.UI.Shared
         private async Task ToggleDarkMode()
         {
             _isDarkMode = !_isDarkMode;
-            if(DarkModeItem == null)
+            if(_isDarkMode)
+                DarkModeText = "Light Mode";
+            else
+                DarkModeText = "Dark Mode";
+
+            if (DarkModeItem == null)
             {
                 DarkModeItem = new UserSettingDto { Key = Common.Enums.Settings.DarkMode.ToString(), UserId=User.Id,};
                 UserSettingHelper.SetValue(DarkModeItem, _isDarkMode);
-                await ApiClient.UserSetting.Add(DarkModeItem);
+                var res=await ApiClient.UserSetting.Add(DarkModeItem);
+                if(res)
+                {
+                    await AuthenticationService.DeleteUserMode();
+                    await AuthenticationService.SetUserMode(DarkModeItem);
+                }
 
             }
             else
             {
                 UserSettingHelper.SetValue(DarkModeItem, _isDarkMode);
-                await ApiClient.UserSetting.Edit(DarkModeItem);
+                var res = await ApiClient.UserSetting.Edit(DarkModeItem);
+                if (res)
+                {
+                    await AuthenticationService.DeleteUserMode();
+                    await AuthenticationService.SetUserMode(DarkModeItem);
+                }
+            }
+        }
+        private async Task SetArabicLang()
+        {
 
+            if (LangItem != null && LangItem.Value != LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG))
+            {
+                _isRTL = true;
+                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG));
+                var res = await ApiClient.UserSetting.Edit(LangItem);
+                if (res)
+                {
+                    await AuthenticationService.DeleteUserLang();
+                    await AuthenticationService.SetUserLang(LangItem);
+                }
+            }
+            else if(LangItem == null )
+            {
+                _isRTL = true;
+                LangItem = new UserSettingDto { Key = Settings.Language.ToString(), UserId = User.Id, };
+                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG));
+                var res = await ApiClient.UserSetting.Add(LangItem);
+                if (res)
+                {
+                    await AuthenticationService.DeleteUserLang();
+                    await AuthenticationService.SetUserLang(LangItem);
+                }
+            }
+        }
+        private async Task SetEnglishLang()
+        {
+
+            if (LangItem != null && LangItem.Value != LanguageCodeExtensions.ToCultureString(LanguageCode.English_US))
+            {
+                _isRTL = false;
+                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.English_US));
+                var res = await ApiClient.UserSetting.Edit(LangItem);
+                if (res)
+                {
+                    await AuthenticationService.DeleteUserLang();
+                    await AuthenticationService.SetUserLang(LangItem);
+                }
+            }
+            else if (LangItem == null)
+            {
+                _isRTL = false;
+                LangItem = new UserSettingDto { Key = Settings.Language.ToString(), UserId = User.Id, };
+                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.English_US));
+                var res = await ApiClient.UserSetting.Add(LangItem);
+                if (res)
+                {
+                    await AuthenticationService.DeleteUserLang();
+                    await AuthenticationService.SetUserLang(LangItem);
+                }
             }
         }
 
@@ -88,19 +162,39 @@ namespace CCMS.FE.UI.Shared
             await base.OnInitializedAsync();
             User = AuthenticationService.GetUser();
 
-            var darkMode = await ApiClient.UserSetting.GetByUserAndKey(new Common.Dto.Request.UserSetting.GetByUserAndKey { Key = Common.Enums.Settings.DarkMode.ToString(), UserId = User.Id });
+            var darkMode = await ApiClient.UserSetting.GetByUserAndKey(new Common.Dto.Request.UserSetting.GetByUserAndKey { UserId=User.Id,Key= Settings.DarkMode.ToString()});
+            var langUser = await ApiClient.UserSetting.GetByUserAndKey(new Common.Dto.Request.UserSetting.GetByUserAndKey { UserId = User.Id, Key = Settings.Language.ToString() });
             DarkModeItem = darkMode;
+            LangItem = langUser;
+            if (langUser != null && langUser.Value== LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG))
+            {
+                _isRTL = true;
+            }
+            else
+                _isRTL= false;
+
             if (darkMode != null )
             {
                
                 var valueDarkMode = UserSettingHelper.GetValue<bool>(darkMode);
                 if (valueDarkMode)
+                {
                     _isDarkMode = true;
+                    DarkModeText = "Light Mode";
+                }
                 else
+                {
                     _isDarkMode = false;
+                    DarkModeText = "Dark Mode";
+
+                }
             }
             else
+            {
                 _isDarkMode = false;
+                DarkModeText = "Dark Mode";
+
+            }
             if (User != null && User.SystemType == Common.Const.SystemType.Restaurant)
             {
                 await LoadItems();

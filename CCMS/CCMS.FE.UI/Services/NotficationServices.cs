@@ -1,24 +1,38 @@
-﻿using MudBlazor;
+﻿using CCMS.Common.Enums;
+using CCMS.Common.Helpers;
+using MudBlazor;
+using System.Threading.Tasks;
 
 namespace CCMS.FE.UI.Services
 {
     public class NotficationServices
     {
         private readonly ISnackbar _Snackbar;
-        public NotficationServices(ISnackbar snackbar)
+        private readonly AuthenticationService _authenticationService;
+        public NotficationServices(ISnackbar snackbar, AuthenticationService authenticationService)
         {
             _Snackbar = snackbar;
+            _authenticationService = authenticationService;
         }
-        public void ShowMessageError(string? Msssage)
+        public async Task ShowMessageError(string? Msssage)
         {
             _Snackbar.Clear();
-            _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+            var lang =await _authenticationService.GetUserLang();
+            if(lang!= null&&lang.Value == LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG))
+                _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopLeft;
+            else
+                _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+
             _Snackbar.Add(Msssage, Severity.Error);
         }
-        public void ShowMessageSuccess(string? Msssage)
+        public async void ShowMessageSuccess(string? Msssage)
         {
             _Snackbar.Clear();
-            _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+            var lang = await _authenticationService.GetUserLang();
+            if (lang != null && lang.Value == LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG))
+                _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopLeft;
+            else
+                _Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
             _Snackbar.Add(Msssage, Severity.Success);
         }
     }

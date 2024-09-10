@@ -1,4 +1,7 @@
+using CCMS.Common.Dto;
+using CCMS.Common.Helpers;
 using CCMS.FE.UI.Extensions;
+using CCMS.FE.UI.Middleware;
 using CCMS.FE.UI.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -19,6 +22,7 @@ namespace CCMS.FE.UI.Pages.Authentication
 
         [Inject] NavigationManager NavigationManager { get; set; }
         [Inject] IDialogService DialogService { get; set; }
+        [Inject] AuthenticationService authenticationService { get; set; }
 
         Common.Dto.Request.Auth.Login Item = new Common.Dto.Request.Auth.Login();
 
@@ -31,6 +35,16 @@ namespace CCMS.FE.UI.Pages.Authentication
 
                 if (res.Success)
                 {
+                    var langUser = await ApiClient.UserSetting.GetByUserAndKey(new Common.Dto.Request.UserSetting.GetByUserAndKey { UserId=res.Id,Key= Common.Enums.Settings.Language.ToString() });
+                    var modeUser = await ApiClient.UserSetting.GetByUserAndKey(new Common.Dto.Request.UserSetting.GetByUserAndKey { UserId = res.Id, Key = Common.Enums.Settings.DarkMode.ToString() });
+
+                    await authenticationService.DeleteUserLang();
+                    await authenticationService.DeleteUserMode();
+                    if (langUser != null)
+                        authenticationService.SetUserLang(langUser);
+                    if (modeUser != null)
+                        authenticationService.SetUserMode(modeUser);
+
                     Guid key = Guid.NewGuid();
                     BlazorCookieLoginMiddleware.Logins[key] = res;
                     var returnUrl = NavigationManager.QueryString("returnUrl") ?? "/";
