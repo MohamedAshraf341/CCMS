@@ -43,19 +43,7 @@ namespace CCMS.FE.Server
                     opt.ResourcesPath = "";
                 });
 
-                services.Configure<RequestLocalizationOptions>(options =>
-                {
-                    List<CultureInfo> supportedCultures = new List<CultureInfo>
-        {
-            new CultureInfo("en-US"),
-            new CultureInfo("ar-EG")
-        };
-
-                    options.DefaultRequestCulture = new RequestCulture("en-US");
-                    options.SupportedCultures = supportedCultures;
-                    options.SupportedUICultures = supportedCultures;
-                });
-
+                services.AddScoped<CultureService>();
             }
             catch (Exception ex)
             {
@@ -84,8 +72,7 @@ namespace CCMS.FE.Server
                 app.UseStaticFiles();
 
                 app.UseRouting();
-                var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
-                app.UseRequestLocalization(options.Value);
+
                 ServicesExtensions.Configure(app);
 
 

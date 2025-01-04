@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CCMS.FE.UI.Services
@@ -47,7 +48,7 @@ namespace CCMS.FE.UI.Services
                 client = new HttpClient { BaseAddress = new Uri(backendUrl + "api/") };
 
             var user = authService.GetUser();
-
+          
             if (user != null)
             {
                 if (user.ExpiresOn <= DateTime.Now)
@@ -72,6 +73,16 @@ namespace CCMS.FE.UI.Services
             {
                 client.DefaultRequestHeaders.Authorization = null;
             }
+            //var localLang = await authService.GetUserLang();
+            //string culture;
+            //if (localLang == null || string.IsNullOrEmpty(localLang.Value))
+            //{
+            //    culture = "en-US"; // Default to en-US if no culture is found
+            //}
+            //else
+            //    culture = localLang.Value;
+            //client.DefaultRequestHeaders.AcceptLanguage.Clear(); // Clear any existing Accept-Language header
+            //client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(culture));
         }
 
         private async Task<T?> Get<T>() where T : ApiClientBase

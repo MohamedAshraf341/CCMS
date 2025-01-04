@@ -31,11 +31,12 @@ namespace CCMS.FE.UI.Pages.Restaurant
             {
                 try
                 {
+                    
                     var res= await ApiClient.Restaurant.GetRestaurants();
                     if(res.Success)
                         Elements = res.Reasturants;
                     else
-                        Notfication.ShowMessageError(res.Message);
+                        await Notfication.ShowMessageError(res.Message);
                 }
                 catch (Exception ex)
                 {
@@ -104,7 +105,7 @@ namespace CCMS.FE.UI.Pages.Restaurant
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }
@@ -125,7 +126,7 @@ namespace CCMS.FE.UI.Pages.Restaurant
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }
@@ -142,7 +143,7 @@ namespace CCMS.FE.UI.Pages.Restaurant
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }

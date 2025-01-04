@@ -39,7 +39,7 @@ namespace CCMS.FE.UI.Pages.Client
                     if (res.Success)
                         Elements = res.Customers;
                     else
-                        Notfication.ShowMessageError(res.Message);
+                        await Notfication.ShowMessageError(res.Message);
                 }
                 catch (Exception ex)
                 {

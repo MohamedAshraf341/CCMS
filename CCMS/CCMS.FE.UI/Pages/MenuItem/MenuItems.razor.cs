@@ -42,7 +42,7 @@ namespace CCMS.FE.UI.Pages.MenuItem
                     if (res.Success)
                         Elements = res.MenuItems;
                     else
-                        Notfication.ShowMessageError(res.Message);
+                        await Notfication.ShowMessageError(res.Message);
                 }
                 catch (Exception ex)
                 {

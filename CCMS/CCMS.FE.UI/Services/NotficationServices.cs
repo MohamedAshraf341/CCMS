@@ -14,7 +14,7 @@ namespace CCMS.FE.UI.Services
             _Snackbar = snackbar;
             _authenticationService = authenticationService;
         }
-        public async Task ShowMessageError(string? Msssage)
+        public async Task  ShowMessageError(string? Msssage)
         {
             _Snackbar.Clear();
             var lang =await _authenticationService.GetUserLang();

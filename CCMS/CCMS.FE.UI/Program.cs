@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+﻿using CCMS.FE.UI.Extensions;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using System;
@@ -18,7 +19,8 @@ namespace CCMS.FE.UI
 
             builder.Services.AddMudServices();
 
-            await builder.Build().RunAsync();
+            var host = builder.Build();
+            await host.RunAsync();
         }
     }
 }

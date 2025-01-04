@@ -93,7 +93,7 @@ namespace CCMS.FE.UI.Pages.User
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace CCMS.FE.UI.Pages.User
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }

@@ -59,7 +59,7 @@ namespace CCMS.FE.UI.Pages.Authentication
             }
             catch (Exception ex)
             {
-                Notfication.ShowMessageError(ex.Message);
+                await Notfication.ShowMessageError(ex.Message);
 
                 Log.Error($"Login.HandleValidSubmit :: Unhandled Exception : {ex}");
             }

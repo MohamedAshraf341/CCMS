@@ -147,25 +147,43 @@
   <data name="Api.Account.SuccessAddUserFailedAddRole" xml:space="preserve">
     <value>Succeeded in adding the user, Failed add role for user</value>
   </data>
-  <data name="DashBoard.NavBar.Branches" xml:space="preserve">
+  <data name="DashBoard.NavBar.Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="DashBoard.NavBar.Arabic" xml:space="preserve">
+    <value>Arabic</value>
+  </data>
+  <data name="DashBoard.NavBar.DarkMode" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="DashBoard.NavBar.English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="DashBoard.NavBar.LightMode" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="DashBoard.NavBar.Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="DashBoard.SideNavBar.Branches" xml:space="preserve">
     <value>Branches</value>
   </data>
-  <data name="DashBoard.NavBar.Clients" xml:space="preserve">
+  <data name="DashBoard.SideNavBar.Clients" xml:space="preserve">
     <value>Clients</value>
   </data>
-  <data name="DashBoard.NavBar.Home" xml:space="preserve">
+  <data name="DashBoard.SideNavBar.Home" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="DashBoard.NavBar.MenuItems" xml:space="preserve">
+  <data name="DashBoard.SideNavBar.MenuItems" xml:space="preserve">
     <value>MenuItems</value>
   </data>
-  <data name="DashBoard.NavBar.Orders" xml:space="preserve">
+  <data name="DashBoard.SideNavBar.Orders" xml:space="preserve">
     <value>Orders</value>
   </data>
-  <data name="DashBoard.NavBar.Restaurants" xml:space="preserve">
+  <data name="DashBoard.SideNavBar.Restaurants" xml:space="preserve">
     <value>Restaurants</value>
   </data>
-  <data name="DashBoard.NavBar.Users" xml:space="preserve">
+  <data name="DashBoard.SideNavBar.Users" xml:space="preserve">
     <value>Users</value>
   </data>
 </root>

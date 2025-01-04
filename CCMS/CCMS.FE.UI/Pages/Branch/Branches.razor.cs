@@ -37,7 +37,7 @@ namespace CCMS.FE.UI.Pages.Branch
                     if (res.Success)
                         Elements = res.Branches;
                     else
-                        Notfication.ShowMessageError(res.Message);
+                        await Notfication.ShowMessageError(res.Message);
                 }
                 catch (Exception ex)
                 {
@@ -115,7 +115,7 @@ namespace CCMS.FE.UI.Pages.Branch
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }

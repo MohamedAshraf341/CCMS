@@ -77,7 +77,7 @@ namespace CCMS.FE.UI.Pages.User
                 if(res.Success)
                     Notfication.ShowMessageSuccess(res.Message);
                 else
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
             }
         }
         private async Task SaveChangesSecurity()
@@ -93,7 +93,7 @@ namespace CCMS.FE.UI.Pages.User
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }

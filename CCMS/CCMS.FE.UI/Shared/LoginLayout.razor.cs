@@ -10,6 +10,19 @@ namespace CCMS.FE.UI.Shared
 {
     public partial class LoginLayout
     {
+        [CascadingParameter]
+        public Task<bool> CultureInitialized { get; set; }
+
+        private bool isCultureInitialized = false;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            if (CultureInitialized is not null)
+            {
+                isCultureInitialized = await CultureInitialized;
+            }
+        }
+
         [Inject] AuthenticationService AuthenticationService { get; set; }
 
         private MudTheme _currentTheme = new MudBlazorAdminDashboard();

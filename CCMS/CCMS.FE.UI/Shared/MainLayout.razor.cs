@@ -6,13 +6,16 @@ using CCMS.Common.Dto;
 using CCMS.Common.Dto.Request.Auth;
 using CCMS.Common.Enums;
 using CCMS.Common.Helpers;
+using CCMS.Common.Resources;
 using CCMS.FE.UI.Services;
 using CCMS.FE.UI.Theme;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.ThemeManager;
 using Serilog;
@@ -21,16 +24,32 @@ namespace CCMS.FE.UI.Shared
 {
     public partial class MainLayout : IDisposable, IAsyncDisposable
     {
-        private readonly string backendUrl;
+        [CascadingParameter]
+        public Task<bool> CultureInitialized { get; set; }
+
+        private bool isCultureInitialized = false;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            if (CultureInitialized is not null)
+            {
+                isCultureInitialized = await CultureInitialized;
+            }
+        }
+
+        [Inject] IStringLocalizer<SharedResources> sharedResources { get; set; }
+
 
         private HubConnection hubConnection;
+        [Inject]   public IJSRuntime _jSRuntime { get; set; }
         [Inject] IDialogService DialogService { get; set; }
         [Inject] Services.NotficationServices Notfication { get; set; }
         [Inject] NavigationManager NavigationManager { get; set; }
         [Inject] AuthenticationService AuthenticationService { get; set; }
         [Inject] ApiClient? ApiClient { get; set; }
         [Inject] IOptions<AppSettings> AppSettings { get; set; } // Inject IOptions<AppSettings>
-
+        private  string backendUrl;
+        [Inject] CultureService cultureService { get; set; }
         private IEnumerable<OrderDto> OrderElements = new List<OrderDto>();
         private Common.Dto.Response.Auth.GetToken User = new Common.Dto.Response.Auth.GetToken();
         private int CountOrder;
@@ -47,14 +66,7 @@ namespace CCMS.FE.UI.Shared
 
         public bool _drawerOpen = true;
         public bool _themeManagerOpen = false;
-        public MainLayout()
-        {
-            backendUrl = AppSettings?.Value?.BackendUrl;
-            if (string.IsNullOrEmpty(backendUrl))
-            {
-                Log.Error("MainLayout.MainLayout BackendUrl not defined in AppSettings.");
-            }
-        }
+
         void DrawerToggle()
         {
             _drawerOpen = !_drawerOpen;
@@ -69,9 +81,9 @@ namespace CCMS.FE.UI.Shared
         {
             _isDarkMode = !_isDarkMode;
             if(_isDarkMode)
-                DarkModeText = "Light Mode";
+                DarkModeText = sharedResources[Common.Keys.DashBoard.NavBar.LightMode];
             else
-                DarkModeText = "Dark Mode";
+                DarkModeText = sharedResources[Common.Keys.DashBoard.NavBar.DarkMode];
 
             if (DarkModeItem == null)
             {
@@ -96,60 +108,50 @@ namespace CCMS.FE.UI.Shared
                 }
             }
         }
-        private async Task SetArabicLang()
+        private async Task SetLanguage(LanguageCode languageCode)
         {
+            // Determine if the language is RTL or LTR
+            _isRTL = languageCode == LanguageCode.Arabic_EG;
 
-            if (LangItem != null && LangItem.Value != LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG))
-            {
-                _isRTL = true;
-                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG));
-                var res = await ApiClient.UserSetting.Edit(LangItem);
-                if (res)
-                {
-                    await AuthenticationService.DeleteUserLang();
-                    await AuthenticationService.SetUserLang(LangItem);
-                }
-            }
-            else if(LangItem == null )
-            {
-                _isRTL = true;
-                LangItem = new UserSettingDto { Key = Settings.Language.ToString(), UserId = User.Id, };
-                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.Arabic_EG));
-                var res = await ApiClient.UserSetting.Add(LangItem);
-                if (res)
-                {
-                    await AuthenticationService.DeleteUserLang();
-                    await AuthenticationService.SetUserLang(LangItem);
-                }
-            }
-        }
-        private async Task SetEnglishLang()
-        {
+            var newLangValue = LanguageCodeExtensions.ToCultureString(languageCode);
 
-            if (LangItem != null && LangItem.Value != LanguageCodeExtensions.ToCultureString(LanguageCode.English_US))
+            if (LangItem != null && LangItem.Value != newLangValue)
             {
-                _isRTL = false;
-                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.English_US));
+                // Update the existing language setting
+                UserSettingHelper.SetValue(LangItem, newLangValue);
                 var res = await ApiClient.UserSetting.Edit(LangItem);
+
                 if (res)
                 {
                     await AuthenticationService.DeleteUserLang();
                     await AuthenticationService.SetUserLang(LangItem);
+
                 }
             }
             else if (LangItem == null)
             {
-                _isRTL = false;
-                LangItem = new UserSettingDto { Key = Settings.Language.ToString(), UserId = User.Id, };
-                UserSettingHelper.SetValue(LangItem, LanguageCodeExtensions.ToCultureString(LanguageCode.English_US));
+                // Create a new language setting
+                LangItem = new UserSettingDto
+                {
+                    Key = Settings.Language.ToString(),
+                    UserId = User.Id,
+                };
+
+                UserSettingHelper.SetValue(LangItem, newLangValue);
                 var res = await ApiClient.UserSetting.Add(LangItem);
+
                 if (res)
                 {
                     await AuthenticationService.DeleteUserLang();
                     await AuthenticationService.SetUserLang(LangItem);
+
                 }
             }
+
+            // Reload the page to apply changes
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
         }
+
 
         void UpdateTheme(ThemeManagerTheme value)
         {
@@ -160,6 +162,7 @@ namespace CCMS.FE.UI.Shared
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+
             User = AuthenticationService.GetUser();
 
             var darkMode = await ApiClient.UserSetting.GetByUserAndKey(new Common.Dto.Request.UserSetting.GetByUserAndKey { UserId=User.Id,Key= Settings.DarkMode.ToString()});
@@ -180,24 +183,29 @@ namespace CCMS.FE.UI.Shared
                 if (valueDarkMode)
                 {
                     _isDarkMode = true;
-                    DarkModeText = "Light Mode";
+                    DarkModeText = sharedResources[Common.Keys.DashBoard.NavBar.LightMode];
                 }
                 else
                 {
                     _isDarkMode = false;
-                    DarkModeText = "Dark Mode";
+                    DarkModeText = sharedResources[Common.Keys.DashBoard.NavBar.DarkMode];
 
                 }
             }
             else
             {
                 _isDarkMode = false;
-                DarkModeText = "Dark Mode";
+                DarkModeText = sharedResources[Common.Keys.DashBoard.NavBar.DarkMode];
 
             }
             if (User != null && User.SystemType == Common.Const.SystemType.Restaurant)
             {
                 await LoadItems();
+                backendUrl = AppSettings?.Value?.BackendUrl;
+                if (string.IsNullOrEmpty(backendUrl))
+                {
+                    Log.Error("MainLayout.MainLayout BackendUrl not defined in AppSettings.");
+                }
                 hubConnection = new HubConnectionBuilder()
                     .WithUrl($"{backendUrl}orderHub") // Backend URL
                     .Build();
@@ -293,7 +301,7 @@ namespace CCMS.FE.UI.Shared
                 }
                 else
                 {
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
                 }
             }
         }
@@ -309,6 +317,7 @@ namespace CCMS.FE.UI.Shared
         public void Dispose()
         {
             NavigationManager.LocationChanged -= LocationChanged;
+
         }
     }
 }

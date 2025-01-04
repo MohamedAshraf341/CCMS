@@ -51,7 +51,7 @@ namespace CCMS.FE.UI.Pages.Order
                     if (res.Success)
                         Elements = res.Orders;
                     else
-                        Notfication.ShowMessageError(res.Message);
+                        await Notfication.ShowMessageError(res.Message);
                 }
                 catch (Exception ex)
                 {

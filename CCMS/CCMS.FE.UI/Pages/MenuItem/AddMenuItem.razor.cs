@@ -45,7 +45,7 @@ namespace CCMS.FE.UI.Pages.MenuItem
                     }
                 }
                 else
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
             }
             catch (Exception ex)
             {
@@ -92,7 +92,7 @@ namespace CCMS.FE.UI.Pages.MenuItem
                 if(res.Success)
                     Notfication.ShowMessageSuccess(res.Message);
                 else
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
             }
         }
     }

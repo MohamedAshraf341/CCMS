@@ -89,7 +89,7 @@ namespace CCMS.FE.UI.Pages.Order
                 if(res.Success)
                     Notfication.ShowMessageSuccess(res.Message);
                 else
-                    Notfication.ShowMessageError(res.Message);
+                    await Notfication.ShowMessageError(res.Message);
             }
         }
         private string ConvertToBase64(byte[]? imageBytes)
